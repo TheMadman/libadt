@@ -161,6 +161,8 @@ void test_vacuum(void)
 
 	assert(a.buffer);
 	assert(a.capacity == 1);
+
+	free_vector(a);
 }
 
 void test_truncate(void)
@@ -173,6 +175,8 @@ void test_truncate(void)
 
 	assert(a.buffer);
 	assert(a.capacity == 10);
+
+	free_vector(a);
 }
 
 void test_end(void)
@@ -196,6 +200,8 @@ void test_end(void)
 	end = (vector_end)(a);
 
 	assert(end - begin == 2);
+
+	free_vector(a);
 }
 
 int main()
