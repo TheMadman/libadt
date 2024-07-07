@@ -40,6 +40,8 @@ extern "C" {
  * The data structure will attempt to reduce the
  * number of reallocation calls necessary, by allocating
  * a larger buffer all at once on simple appends.
+ *
+ * \sa LIBADT_VECTOR_WITH
  */
 struct libadt_vector {
 	/**
@@ -52,7 +54,7 @@ struct libadt_vector {
 	 */
 	size_t size;
 
-	/*
+	/**
 	 * \brief The number of elements currently
 	 * 	being stored.
 	 */
@@ -71,12 +73,18 @@ struct libadt_vector {
  * \brief Constructs a new libadt_vector with the given
  * 	element size and initial capacity.
  *
+ * If an initial capacity was provided but failed to
+ * allocate, a vector failing libadt_vector_valid() is
+ * returned.
+ *
  * \param size The size of an individual element.
  * \param initial_capacity The initial capacity to allocate.
  * 	An initial_capacity of 0 will delay allocation until
  * 	the vector is appended to.
  *
- * \returns A vector ready to append elements to.
+ * \returns A vector ready to append elements to, or a
+ * 	vector failing libadt_vector_valid() if an allocation
+ * 	attempt failed.
  */
 struct libadt_vector libadt_vector_init(size_t size, size_t initial_capacity);
 
@@ -86,9 +94,69 @@ struct libadt_vector libadt_vector_init(size_t size, size_t initial_capacity);
  *
  * \param vector The vector to free.
  *
- * \returns A null vector.
+ * \returns A vector failing libadt_vector_valid().
  */
 struct libadt_vector libadt_vector_free(struct libadt_vector vector);
+
+/**
+ * \public \memberof libadt_vector
+ * \brief Tests whether a libadt_vector is a valid object.
+ *
+ * A function-like macro with the same name is provided, and will
+ * be used by default for function call syntax.
+ *
+ * \param vector The vector to test.
+ *
+ * \returns True if the vector is valid for use, false otherwise.
+ */
+bool libadt_vector_valid(struct libadt_vector vector);
+#define libadt_vector_valid(vec) (!!(vec).size)
+
+/**
+ * \brief Provides a context manager interface for a vector.
+ *
+ * This macro creates a vector variable, with the name NAME,
+ * initialized with the given SIZE and INITIAL_CAPACITY.
+ *
+ * If the vector initialized correctly, the given code block is run.
+ * Otherwise, it is skipped.
+ *
+ * If the vector initialized correctly, then after the given
+ * code block is run, the vector is released.
+ *
+ * Example usage:
+ *
+ * \code
+ * LIBADT_VECTOR_WITH(my_vec, sizeof(int), 10) {
+ * 	// Now, my_vec is a libadt_vector struct and can be used
+ * 	// normally.
+ *
+ * 	my_data = 4;
+ * 	my_vec = libadt_vector_append(my_vec, &my_data);
+ *
+ * 	// Breaking and returning from the block will produce
+ * 	// a leak. To leave the block early while freeing the
+ * 	// vector, use a continue instead.
+ *
+ * 	if (some_error)
+ * 		continue;
+ *
+ * 	use(my_vec);
+ * }
+ * \endcode
+ *
+ * \param NAME The name to give the vector variable
+ * \param SIZE The size of each element, as passed to libadt_vector_init()
+ * \param INITIAL_CAPACITY The initial capacity of the vector, as passed
+ * 	to libadt_vector_init()
+ */
+#define LIBADT_VECTOR_WITH(NAME, SIZE, INITIAL_CAPACITY) \
+for ( \
+	struct libadt_vector \
+		NAME = libadt_vector_init(SIZE, INITIAL_CAPACITY); \
+	libadt_vector_valid(NAME); \
+	NAME = libadt_vector_free(name) \
+)
 
 /**
  * \public \memberof libadt_vector

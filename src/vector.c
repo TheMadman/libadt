@@ -31,8 +31,13 @@ struct libadt_vector libadt_vector_init(size_t size, size_t initial_capacity)
 		.length = 0,
 	};
 
-	if (initial_capacity)
-		result = libadt_vector_trunc(result, initial_capacity);
+	if (initial_capacity) {
+		struct libadt_vector attempt = libadt_vector_trunc(result, initial_capacity);
+		if (libadt_vector_identity(attempt, result))
+			return (struct libadt_vector) { 0 };
+		else
+			result = attempt;
+	}
 
 	return result;
 }
@@ -104,4 +109,10 @@ void *libadt_vector_index(struct libadt_vector vector, size_t index)
 void *libadt_vector_end(struct libadt_vector vector)
 {
 	return libadt_vector_index(vector, vector.length);
+}
+
+#undef libadt_vector_valid
+bool libadt_vector_valid(struct libadt_vector vector)
+{
+	return !!vector.size;
 }
