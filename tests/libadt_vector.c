@@ -26,7 +26,8 @@
 #define append libadt_vector_append
 #define index libadt_vector_index
 #define vacuum libadt_vector_vacuum
-#define end libadt_vector_end
+#define vector_end libadt_vector_end
+#define truncate libadt_vector_trunc
 typedef struct libadt_vector vector;
 
 void test_identity(void)
@@ -162,6 +163,18 @@ void test_vacuum(void)
 	assert(a.capacity == 1);
 }
 
+void test_truncate(void)
+{
+	vector a = init_vector(sizeof(int), 0);
+
+	assert(!a.buffer);
+
+	a = truncate(a, 10);
+
+	assert(a.buffer);
+	assert(a.capacity == 10);
+}
+
 void test_end(void)
 {
 	vector a = init_vector(sizeof(int), 10);
@@ -175,7 +188,12 @@ void test_end(void)
 
 	int
 		*begin = index(a, 0),
-		*end = end(a);
+		*end = vector_end(a);
+
+	assert(end - begin == 2);
+
+	// function version
+	end = (vector_end)(a);
 
 	assert(end - begin == 2);
 }
