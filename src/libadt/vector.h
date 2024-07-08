@@ -155,7 +155,7 @@ for ( \
 	struct libadt_vector \
 		NAME = libadt_vector_init(SIZE, INITIAL_CAPACITY); \
 	libadt_vector_valid(NAME); \
-	NAME = libadt_vector_free(name) \
+	NAME = libadt_vector_free(NAME) \
 )
 
 /**
