@@ -298,6 +298,22 @@ void *libadt_vector_end(struct libadt_vector vector);
 #define libadt_vector_end(vec) \
 	libadt_vector_index((vec), (vec).length)
 
+/**
+ * \public \memberof libadt_vector
+ * \brief Writes the last element of the vector to _out_ and
+ * 	removes it from _vector_.
+ *
+ * This function only performs a logical remove: the memory is
+ * not modified. To reclaim the memory, use libadt_vector_vacuum()
+ * on completion.
+ *
+ * \param vector The vector to pop a value from.
+ * \param out The location to write the value to.
+ *
+ * \returns The vector with the modified length.
+ */
+struct libadt_vector libadt_vector_pop(struct libadt_vector vector, void *out);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

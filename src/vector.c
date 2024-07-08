@@ -80,6 +80,7 @@ struct libadt_vector libadt_vector_append_n(
 		vector = new;
 	}
 
+	// I _feel like_ this could be a memcpy but I'm scared of my users
 	memmove(libadt_vector_end(vector), data, vector.size * number);
 	vector.length += number;
 	return vector;
@@ -115,4 +116,11 @@ void *libadt_vector_end(struct libadt_vector vector)
 bool libadt_vector_valid(struct libadt_vector vector)
 {
 	return !!vector.size;
+}
+
+struct libadt_vector libadt_vector_pop(struct libadt_vector vector, void *out)
+{
+	const void *value = libadt_vector_index(vector, --vector.length);
+	memmove(out, value, vector.size);
+	return vector;
 }

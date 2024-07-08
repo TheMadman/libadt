@@ -28,6 +28,7 @@
 #define vacuum libadt_vector_vacuum
 #define vector_end libadt_vector_end
 #define truncate libadt_vector_trunc
+#define pop libadt_vector_pop
 typedef struct libadt_vector vector;
 
 void test_identity(void)
@@ -204,6 +205,23 @@ void test_end(void)
 	free_vector(a);
 }
 
+void test_pop(void)
+{
+	int
+		input = 4,
+		output = 0;
+
+	vector a = append(init_vector(sizeof(int), 1), &input);
+
+	assert(a.length == 1);
+	assert(*(int*)index(a, 0) == 4);
+
+	a = pop(a, &output);
+
+	assert(a.length == 0);
+	assert(output == 4);
+}
+
 int main()
 {
 	test_identity();
@@ -211,4 +229,5 @@ int main()
 	test_append_macro();
 	test_append();
 	test_vacuum();
+	test_pop();
 }
