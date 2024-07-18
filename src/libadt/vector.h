@@ -280,7 +280,7 @@ void *libadt_vector_index(struct libadt_vector vector, size_t index);
 
 // wow this is ugly
 #define libadt_vector_index(vec, index) \
-	((void *)&((char *)(vec).buffer)[(vec).size * index])
+	((void *)&((char *)(vec).buffer)[(vec).size * (index)])
 
 /**
  * \public \memberof libadt_vector
