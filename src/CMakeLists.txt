@@ -1,5 +1,6 @@
 set(SOURCES
-	vector.c)
+	vector.c
+	bitwise_array.c)
 
 add_library(adt SHARED ${SOURCES})
 add_library(adtstatic STATIC ${SOURCES})

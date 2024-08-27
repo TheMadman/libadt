@@ -5,3 +5,4 @@ function(testcase target)
 endfunction()
 
 testcase(libadt_vector)
+testcase(libadt_bitwise_array)
