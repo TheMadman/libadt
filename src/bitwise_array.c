@@ -73,18 +73,18 @@ unsigned int libadt_bitwise_array_get(struct libadt_bitwise_array array, ssize_t
 	int start_from = (int)byte_index.rem;
 
 	for (int bits_remaining = array.width; bits_remaining > 0; location++) {
-		const unsigned
-			ones = ~0U,
-			right_bits_ignore = (unsigned)MAX(0, CHAR_BIT - start_from - bits_remaining),
+		const libadt_bitwise_array_bit
+			ones = (libadt_bitwise_array_bit)~0u,
+			right_bits_ignore = (libadt_bitwise_array_bit)MAX(0, CHAR_BIT - start_from - bits_remaining),
 			mask_right = ones >> start_from,
 			mask_left = ones << right_bits_ignore,
 			mask = mask_left & mask_right,
-			bits_read = (unsigned)(CHAR_BIT - start_from - (int)right_bits_ignore),
+			bits_read = (libadt_bitwise_array_bit)(CHAR_BIT - start_from - right_bits_ignore),
 			value_here = (*location & mask) >> right_bits_ignore;
 
 		result = (result << bits_read) + value_here;
 
-		bits_remaining -= (int)bits_read;
+		bits_remaining -= bits_read;
 		start_from = 0;
 	}
 
@@ -103,18 +103,18 @@ void libadt_bitwise_array_set(
 	int start_from = (int)byte_index.rem;
 
 	for (int bits_remaining = array.width; bits_remaining > 0; location++) {
-		const unsigned
-			ones = ~0U,
-			right_bits_ignore = (unsigned)MAX(0, (CHAR_BIT - start_from - bits_remaining)),
+		const libadt_bitwise_array_bit
+			ones = (libadt_bitwise_array_bit)~0u,
+			right_bits_ignore = (libadt_bitwise_array_bit)MAX(0, (CHAR_BIT - start_from - bits_remaining)),
 			mask_right = ones >> start_from,
 			mask_left = ones << right_bits_ignore,
 			mask = ~(mask_left & mask_right),
-			bits_write = (unsigned)(CHAR_BIT - start_from - (int)right_bits_ignore);
+			bits_write = (libadt_bitwise_array_bit)(CHAR_BIT - start_from - right_bits_ignore);
 
 		*location = (libadt_bitwise_array_bit)((*location & mask)
-			+ (value >> ((unsigned)bits_remaining - bits_write) << right_bits_ignore));
+			+ (value >> (bits_remaining - bits_write) << right_bits_ignore));
 
-		bits_remaining -= (int)bits_write;
+		bits_remaining -= bits_write;
 		start_from = 0;
 	}
 }
