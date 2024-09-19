@@ -4,5 +4,6 @@ function(testcase target)
 	add_test(NAME ${target} COMMAND test_${target})
 endfunction()
 
+testcase(libadt_lptr)
 testcase(libadt_vector)
 testcase(libadt_bitwise_array)

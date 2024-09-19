@@ -48,8 +48,8 @@ struct libadt_vector libadt_vector_free(struct libadt_vector vector)
 	return (struct libadt_vector){ 0 };
 }
 
-#undef libadt_vector_identity
-bool libadt_vector_identity(
+// The (function_name) syntax prevents macro expansion
+bool (libadt_vector_identity)(
 	struct libadt_vector first,
 	struct libadt_vector second
 )
@@ -86,8 +86,7 @@ struct libadt_vector libadt_vector_append_n(
 	return vector;
 }
 
-#undef libadt_vector_append
-struct libadt_vector libadt_vector_append(
+struct libadt_vector (libadt_vector_append)(
 	struct libadt_vector vector,
 	void *data
 )
@@ -100,20 +99,17 @@ struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector)
 	return libadt_vector_trunc(vector, vector.length);
 }
 
-#undef libadt_vector_index
-void *libadt_vector_index(struct libadt_vector vector, size_t index)
+void *(libadt_vector_index)(struct libadt_vector vector, size_t index)
 {
 	return &((char *)vector.buffer)[vector.size * index];
 }
 
-#undef libadt_vector_end
-void *libadt_vector_end(struct libadt_vector vector)
+void *(libadt_vector_end)(struct libadt_vector vector)
 {
 	return libadt_vector_index(vector, vector.length);
 }
 
-#undef libadt_vector_valid
-bool libadt_vector_valid(struct libadt_vector vector)
+bool (libadt_vector_valid)(struct libadt_vector vector)
 {
 	return !!vector.size;
 }
