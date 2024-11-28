@@ -31,6 +31,8 @@ extern "C" {
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "util.h"
+
 /**
  * \brief Defines a long- or length-pointer type.
  *
@@ -42,6 +44,8 @@ extern "C" {
  * Passing values greater than SSIZE_MAX, even to functions
  * accepting a size_t and not a ssize_t, is undefined
  * behaviour.
+ *
+ * \sa libadt_const_lptr
  */
 struct libadt_lptr {
 	/**
@@ -63,6 +67,56 @@ struct libadt_lptr {
 };
 
 /**
+ * \brief Defines a constant long- or length-pointer type.
+ *
+ * Note that this implementation is _only_ intended to
+ * extend the basic pointer type with array information:
+ * it _does not_ implement additional safety checks
+ * over pointers.
+ *
+ * Passing values greater than SSIZE_MAX, even to functions
+ * accepting a size_t and not a ssize_t, is undefined
+ * behaviour.
+ *
+ * \sa libadt_lptr
+ */
+struct libadt_const_lptr {
+	/**
+	 * \brief A pointer to the memory.
+	 */
+	const void *buffer;
+
+	/**
+	 * \brief The size of each member, used for
+	 * 	indexing and iterating.
+	 */
+	ssize_t size;
+
+	/**
+	 * \brief The number of member objects the
+	 * 	buffer can store.
+	 */
+	ssize_t length;
+};
+
+/**
+ * \brief Initializes a libadt_const_lptr from a libadt_lptr.
+ *
+ * Also provided in macro form.
+ *
+ * \param ptr The pointer to make a const pointer from.
+ *
+ * \returns The const pointer.
+ */
+struct libadt_const_lptr libadt_const_lptr(struct libadt_lptr ptr);
+#define lilbadt_const_lptr(ptr) \
+	((struct libadt_lptr) { \
+		.buffer = (ptr).buffer, \
+		.size = (ptr).size, \
+		.length = (ptr).length, \
+	})
+
+/**
  * \brief A convenience macro for initializing
  * 	an lptr from an existing fixed-length array.
  *
@@ -77,7 +131,7 @@ struct libadt_lptr {
  * \returns A new libadt_lptr object.
  */
 #define libadt_lptr_init_array(array) \
-	((struct libadt_lptr){ (array), (sizeof(array[0])), (sizeof(array) / (sizeof(array[0]))) })
+	((struct libadt_lptr){ (array), (sizeof(array[0])), libadt_util_arrlength(array) })
 
 /**
  * \brief Allocates an array buffer, initialized to 0,
@@ -250,7 +304,7 @@ struct libadt_lptr libadt_lptr_index(
 );
 #define libadt_lptr_index(lptr, index) \
 	((struct libadt_lptr) { \
-		(lptr).buffer + index * (lptr).size, \
+		(char)(lptr).buffer + index * (lptr).size, \
 		(lptr).size, \
 		(lptr).length - index, \
 	})

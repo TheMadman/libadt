@@ -4,6 +4,15 @@
 #include <limits.h>
 
 // The (function_name) syntax prevents macro expansion
+struct libadt_const_lptr (libadt_const_lptr)(struct libadt_lptr ptr)
+{
+	return (struct libadt_const_lptr) {
+		.buffer = ptr.buffer,
+		.size = ptr.size,
+		.length = ptr.length,
+	};
+}
+
 struct libadt_lptr (libadt_lptr_calloc)(size_t nmemb, size_t size)
 {
 	return (struct libadt_lptr) {
