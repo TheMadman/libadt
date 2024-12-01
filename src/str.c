@@ -9,7 +9,7 @@ struct libadt_lptr libadt_str(char *const str)
 	return (struct libadt_lptr) {
 		.buffer = str,
 		.size = sizeof(*str),
-		.length = strlen(str),
+		.length = (ssize_t)strlen(str),
 	};
 }
 
