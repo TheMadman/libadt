@@ -137,9 +137,6 @@ inline struct libadt_const_lptr libadt_const_lptr(struct libadt_lptr ptr)
  * \brief Allocates an array buffer, initialized to 0,
  * 	returning it as an lptr.
  *
- * As well as a function, a macro is provided, wrapping
- * calloc() directly.
- *
  * \param nmemb The number of members (length), identical to
  * 	calloc.
  * \param size The size of each member.
