@@ -30,6 +30,7 @@ extern "C" {
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <limits.h>
 
 #include "util.h"
 
@@ -102,19 +103,18 @@ struct libadt_const_lptr {
 /**
  * \brief Initializes a libadt_const_lptr from a libadt_lptr.
  *
- * Also provided in macro form.
- *
  * \param ptr The pointer to make a const pointer from.
  *
  * \returns The const pointer.
  */
-struct libadt_const_lptr libadt_const_lptr(struct libadt_lptr ptr);
-#define lilbadt_const_lptr(ptr) \
-	((struct libadt_lptr) { \
-		.buffer = (ptr).buffer, \
-		.size = (ptr).size, \
-		.length = (ptr).length, \
-	})
+inline struct libadt_const_lptr libadt_const_lptr(struct libadt_lptr ptr)
+{
+	return (struct libadt_const_lptr) {
+		.buffer = ptr.buffer,
+		.size = ptr.size,
+		.length = ptr.length,
+	};
+}
 
 /**
  * \brief A convenience macro for initializing
@@ -148,20 +148,17 @@ struct libadt_const_lptr libadt_const_lptr(struct libadt_lptr ptr);
  * 	if allocation succeeded, or failing libadt_lptr_valid() if
  * 	allocation failed.
  */
-struct libadt_lptr libadt_lptr_calloc(size_t nmemb, size_t size);
-#define libadt_lptr_calloc(nmemb, size) \
-	((struct libadt_lptr) { \
-		calloc((nmemb), (size)), \
-		(ssize_t)(nmemb), \
-		(ssize_t)(size)\
-	})
+inline struct libadt_lptr libadt_lptr_calloc(size_t nmemb, size_t size)
+{
+	return (struct libadt_lptr) {
+		calloc(nmemb, size),
+		(ssize_t)nmemb,
+		(ssize_t)size,
+	};
+}
 
 /**
  * \brief Reallocates an lptr, reusing the old size.
- *
- * This function is not provided as a macro, as `reallocarray`
- * is a non-standard extension. This function performs an
- * overflow check on the new length.
  *
  * \param lptr The lptr to reallocate.
  * \param nmemb The new number of members (length) to
@@ -171,35 +168,47 @@ struct libadt_lptr libadt_lptr_calloc(size_t nmemb, size_t size);
  * 	new length if reallocation was successful or the
  * 	old length if it failed.
  */
-struct libadt_lptr libadt_lptr_reallocarray(
+inline struct libadt_lptr libadt_lptr_reallocarray(
 	struct libadt_lptr lptr,
 	size_t nmemb
-);
+)
+{
+	if (SSIZE_MAX / (ssize_t)nmemb < lptr.size)
+		return lptr;
+
+	const size_t new_size = (size_t)lptr.size * nmemb;
+	void *const attempt = realloc(lptr.buffer, new_size);
+	if (attempt) {
+		lptr.buffer = attempt;
+		lptr.length = (ssize_t)nmemb;
+	}
+	return lptr;
+}
 
 /**
  * \brief Frees an allocated lptr, returning an invalid lptr.
- *
- * Also provided in macro form.
  *
  * \param lptr The lptr to free
  *
  * \returns A libadt_lptr failing libadt_lptr_valid().
  */
-struct libadt_lptr libadt_lptr_free(struct libadt_lptr lptr);
-#define libadt_lptr_free(lptr) \
-	(free((lptr).buffer), (struct libadt_lptr) { 0 })
+inline struct libadt_lptr libadt_lptr_free(struct libadt_lptr lptr)
+{
+	free(lptr.buffer);
+	return (struct libadt_lptr) { 0 };
+}
 
 /**
  * \brief Returns raw pointer the given lptr contains.
- *
- * Also provided in macro form.
  *
  * \param lptr The libadt_lptr to get the raw pointer for.
  *
  * \returns a void pointer.
  */
-void *libadt_lptr_raw(struct libadt_lptr lptr);
-#define libadt_lptr_raw(lptr) ((lptr).buffer)
+inline void *libadt_lptr_raw(struct libadt_lptr lptr)
+{
+	return lptr.buffer;
+}
 
 /**
  * \brief Returns whether allocation of the lptr was
@@ -208,14 +217,14 @@ void *libadt_lptr_raw(struct libadt_lptr lptr);
  * Only valid for an lptr returned by libadt_lptr_calloc()
  * or libadt_lptr_realloc().
  *
- * Also provided in macro form.
- *
  * \param lptr The lptr to test.
  *
  * \returns true if allocation succeeded, false otherwise.
  */
-bool libadt_lptr_allocated(struct libadt_lptr lptr);
-#define libadt_lptr_allocated(lptr) (!!libadt_lptr_raw(lptr))
+inline bool libadt_lptr_allocated(struct libadt_lptr lptr)
+{
+	return !!libadt_lptr_raw(lptr);
+}
 
 /**
  * \brief Returns whether the given lptr is out-of-bounds.
@@ -223,15 +232,15 @@ bool libadt_lptr_allocated(struct libadt_lptr lptr);
  * Used in combination with libadt_lptr_index() to perform
  * boundary checking.
  *
- * Also provided in macro form.
- *
  * \param lptr The lptr to test.
  *
  * \returns true if the pointer is still in-bounds,
  * 	false if it is out-of-bounds.
  */
-bool libadt_lptr_in_bounds(struct libadt_lptr lptr);
-#define libadt_lptr_in_bounds(lptr) ((lptr).length > 0)
+inline bool libadt_lptr_in_bounds(struct libadt_lptr lptr)
+{
+	return lptr.length > 0;
+}
 
 /**
  * \brief Returns whether the given lptr is valid.
@@ -239,15 +248,15 @@ bool libadt_lptr_in_bounds(struct libadt_lptr lptr);
  * An lptr can be invalid if an allocation failed or if
  * it points to out-of-bounds memory.
  *
- * Also provided in macro form.
- *
  * \param lptr The lptr to test.
  *
  * \returns true if the pointer is valid, false otherwise.
  */
-bool libadt_lptr_valid(struct libadt_lptr lptr);
-#define libadt_lptr_valid(lptr) \
-	(libadt_lptr_allocated(lptr) && libadt_lptr_in_bounds(lptr))
+inline bool libadt_lptr_valid(struct libadt_lptr lptr)
+{
+	return libadt_lptr_allocated(lptr)
+		&& libadt_lptr_in_bounds(lptr);
+}
 
 /**
  * \brief Changes the length of the given lptr to the given
@@ -261,24 +270,23 @@ bool libadt_lptr_valid(struct libadt_lptr lptr);
  *
  * Do not use this to increase the length of the buffer.
  *
- * Also provided in macro form.
- *
  * \param lptr The lptr to modify.
  * \param length The new length to set.
  *
  * \returns A new libadt_lptr object, with the length reduced
  * 	if the new length was valid, or unmodified if not.
  */
-struct libadt_lptr libadt_lptr_truncate(
+inline struct libadt_lptr libadt_lptr_truncate(
 	struct libadt_lptr lptr,
 	size_t length
-);
-#define libadt_lptr_truncate(lptr, length) \
-	((struct libadt_lptr) { \
-	 	(lptr).buffer, \
-		(lptr).size, \
-		(length), \
-	})
+)
+{
+	return (struct libadt_lptr) {
+		lptr.buffer,
+		lptr.size,
+		(ssize_t)length
+	};
+}
 
 /**
  * \brief Progresses the lptr to the given index,
@@ -289,8 +297,6 @@ struct libadt_lptr libadt_lptr_truncate(
  * This function does no boundary checking; test the
  * results with libadt_lptr_valid() or libadt_lptr_in_bounds().
  *
- * Also provided in macro form.
- *
  * \param lptr The lptr to index into.
  * \param index The index.
  *
@@ -298,16 +304,18 @@ struct libadt_lptr libadt_lptr_truncate(
  * 	and length modified to correspond to the new
  * 	index.
  */
-struct libadt_lptr libadt_lptr_index(
+inline struct libadt_lptr libadt_lptr_index(
 	struct libadt_lptr lptr,
 	ssize_t index
-);
-#define libadt_lptr_index(lptr, index) \
-	((struct libadt_lptr) { \
-		(char)(lptr).buffer + index * (lptr).size, \
-		(lptr).size, \
-		(lptr).length - index, \
-	})
+)
+{
+	const ssize_t byte_index = index * lptr.size;
+	return (struct libadt_lptr) {
+		(char*)lptr.buffer + byte_index,
+		lptr.size,
+		lptr.length - index,
+	};
+}
 
 #define LIBADT_LPTR_WITH(name, length, size) \
 	for ( \
