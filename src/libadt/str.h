@@ -15,13 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-\
+
 #ifndef LIBADT_STR
 #define LIBADT_STR
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <string.h>
+#include <wchar.h>
+#include <limits.h>
 
 #include "lptr.h"
 
@@ -61,7 +65,14 @@ extern "C" {
  *
  * \sa libadt_wstr
  */
-struct libadt_lptr libadt_str(char *const str);
+inline struct libadt_lptr libadt_str(char *const str)
+{
+	return (struct libadt_lptr) {
+		.buffer = str,
+		.size = sizeof(*str),
+		.length = (ssize_t)strlen(str),
+	};
+}
 
 /**
  * \brief Initializes a libadt_lptr to a null-terminated
@@ -79,7 +90,14 @@ struct libadt_lptr libadt_str(char *const str);
  *
  * \sa libadt_str
  */
-struct libadt_lptr libadt_wstr(wchar_t *const str);
+inline struct libadt_lptr libadt_wstr(wchar_t *const str)
+{
+	return (struct libadt_lptr) {
+		.buffer = str,
+		.size = sizeof(*str),
+		.length = (ssize_t)wcslen(str),
+	};
+}
 
 #ifdef __cplusplus
 } // extern "C"
