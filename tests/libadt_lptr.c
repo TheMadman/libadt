@@ -22,8 +22,19 @@
 #include "libadt/lptr.h"
 
 typedef struct libadt_lptr lptr_t;
+typedef struct libadt_const_lptr const_lptr_t;
 
 #define allocated libadt_lptr_allocated
+
+void test_libadt_const_lptr_init_array(void)
+{
+	const char message[] = "Hello, world!";
+	const_lptr_t lptr = libadt_const_lptr_init_array(message);
+
+	assert(lptr.length == sizeof(message));
+	assert(lptr.size == 1);
+	assert(lptr.buffer == message);
+}
 
 void test_libadt_lptr_init_array(void)
 {

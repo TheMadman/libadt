@@ -8,6 +8,21 @@
 // extern declarations.
 
 struct libadt_const_lptr libadt_const_lptr(struct libadt_lptr ptr);
+struct libadt_lptr libadt_lptr_unconst_cast(
+	struct libadt_const_lptr cptr
+);
+const void *libadt_const_lptr_raw(struct libadt_const_lptr lptr);
+bool libadt_const_lptr_allocated(struct libadt_const_lptr lptr);
+bool libadt_const_lptr_in_bounds(struct libadt_const_lptr lptr);
+bool libadt_const_lptr_valid(struct libadt_const_lptr lptr);
+struct libadt_const_lptr libadt_const_lptr_truncate(
+	struct libadt_const_lptr lptr,
+	size_t length
+);
+struct libadt_const_lptr libadt_const_lptr_index(
+	struct libadt_const_lptr lptr,
+	ssize_t index
+);
 struct libadt_lptr libadt_lptr_calloc(size_t nmemb, size_t size);
 struct libadt_lptr libadt_lptr_reallocarray(
 	struct libadt_lptr lptr,

@@ -35,39 +35,6 @@ extern "C" {
 #include "util.h"
 
 /**
- * \brief Defines a long- or length-pointer type.
- *
- * Note that this implementation is _only_ intended to
- * extend the basic pointer type with array information:
- * it _does not_ implement additional safety checks
- * over pointers.
- *
- * Passing values greater than SSIZE_MAX, even to functions
- * accepting a size_t and not a ssize_t, is undefined
- * behaviour.
- *
- * \sa libadt_const_lptr
- */
-struct libadt_lptr {
-	/**
-	 * \brief A pointer to the memory.
-	 */
-	void *buffer;
-
-	/**
-	 * \brief The size of each member, used for
-	 * 	indexing and iterating.
-	 */
-	ssize_t size;
-
-	/**
-	 * \brief The number of member objects the
-	 * 	buffer can store.
-	 */
-	ssize_t length;
-};
-
-/**
  * \brief Defines a constant long- or length-pointer type.
  *
  * Note that this implementation is _only_ intended to
@@ -101,6 +68,39 @@ struct libadt_const_lptr {
 };
 
 /**
+ * \brief Defines a long- or length-pointer type.
+ *
+ * Note that this implementation is _only_ intended to
+ * extend the basic pointer type with array information:
+ * it _does not_ implement additional safety checks
+ * over pointers.
+ *
+ * Passing values greater than SSIZE_MAX, even to functions
+ * accepting a size_t and not a ssize_t, is undefined
+ * behaviour.
+ *
+ * \sa libadt_const_lptr
+ */
+struct libadt_lptr {
+	/**
+	 * \brief A pointer to the memory.
+	 */
+	void *buffer;
+
+	/**
+	 * \brief The size of each member, used for
+	 * 	indexing and iterating.
+	 */
+	ssize_t size;
+
+	/**
+	 * \brief The number of member objects the
+	 * 	buffer can store.
+	 */
+	ssize_t length;
+};
+
+/**
  * \brief Initializes a libadt_const_lptr from a libadt_lptr.
  *
  * \param ptr The pointer to make a const pointer from.
@@ -113,6 +113,161 @@ inline struct libadt_const_lptr libadt_const_lptr(struct libadt_lptr ptr)
 		.buffer = ptr.buffer,
 		.size = ptr.size,
 		.length = ptr.length,
+	};
+}
+
+/**
+ * \brief Casts away the constness of a libadt_const_lptr.
+ *
+ * Casting away const is unsafe. This function should be avoided
+ * unless you know what you're doing.
+ *
+ * \param cptr The pointer to cast const away from.
+ *
+ * \returns A non-const libadt_lptr.
+ */
+inline struct libadt_lptr libadt_lptr_unconst_cast(
+	struct libadt_const_lptr cptr
+)
+{
+	// Needs changing if the structure of
+	// lptr and const_lptr diverge
+	return *(struct libadt_lptr *)&cptr;
+}
+
+/**
+ * \brief A convenience macro for initializing
+ * 	an lptr from an existing fixed-length array.
+ *
+ * Example:
+ *
+ * \code
+ * const char message[] = "Hello, world!";
+ * struct libadt_const_lptr ptr = libad_lptr_init_array(message);
+ * \endcode
+ *
+ * \param array The array to initialize an lptr from.
+ * \returns A new libadt_const_lptr object.
+ */
+#define libadt_const_lptr_init_array(array) \
+	((struct libadt_const_lptr){ (array), (sizeof(array[0])), libadt_util_arrlength(array) })
+
+/**
+ * \brief Returns raw pointer the given lptr contains.
+ *
+ * \param lptr The libadt_const_lptr to get the raw pointer for.
+ *
+ * \returns a void pointer.
+ */
+inline const void *libadt_const_lptr_raw(struct libadt_const_lptr lptr)
+{
+	return lptr.buffer;
+}
+
+/**
+ * \brief Returns whether allocation of the lptr was
+ * 	successful.
+ *
+ * Only valid for an lptr returned by libadt_const_lptr_calloc()
+ * or libadt_const_lptr_realloc().
+ *
+ * \param lptr The lptr to test.
+ *
+ * \returns true if allocation succeeded, false otherwise.
+ */
+inline bool libadt_const_lptr_allocated(struct libadt_const_lptr lptr)
+{
+	return !!libadt_const_lptr_raw(lptr);
+}
+
+/**
+ * \brief Returns whether the given lptr is out-of-bounds.
+ *
+ * Used in combination with libadt_const_lptr_index() to perform
+ * boundary checking.
+ *
+ * \param lptr The lptr to test.
+ *
+ * \returns true if the pointer is still in-bounds,
+ * 	false if it is out-of-bounds.
+ */
+inline bool libadt_const_lptr_in_bounds(struct libadt_const_lptr lptr)
+{
+	return lptr.length > 0;
+}
+
+/**
+ * \brief Returns whether the given lptr is valid.
+ *
+ * An lptr can be invalid if an allocation failed or if
+ * it points to out-of-bounds memory.
+ *
+ * \param lptr The lptr to test.
+ *
+ * \returns true if the pointer is valid, false otherwise.
+ */
+inline bool libadt_const_lptr_valid(struct libadt_const_lptr lptr)
+{
+	return libadt_const_lptr_allocated(lptr)
+		&& libadt_const_lptr_in_bounds(lptr);
+}
+
+/**
+ * \brief Changes the length of the given lptr to the given
+ * 	value.
+ *
+ * Does not modify the allocation: to reallocate an allocated
+ * lptr to a new size, use libadt_const_lptr_reallocarray().
+ *
+ * The primary use is to reduce the length of the buffer,
+ * so that functions can operate on a sub-set of the buffer.
+ *
+ * Do not use this to increase the length of the buffer.
+ *
+ * \param lptr The lptr to modify.
+ * \param length The new length to set.
+ *
+ * \returns A new libadt_const_lptr object, with the length reduced
+ * 	if the new length was valid, or unmodified if not.
+ */
+inline struct libadt_const_lptr libadt_const_lptr_truncate(
+	struct libadt_const_lptr lptr,
+	size_t length
+)
+{
+	return (struct libadt_const_lptr) {
+		lptr.buffer,
+		lptr.size,
+		(ssize_t)length
+	};
+}
+
+/**
+ * \brief Progresses the lptr to the given index,
+ * 	taking into account the member size.
+ *
+ * This function does no overflow check on `lptr.size * index`.
+ *
+ * This function does no boundary checking; test the
+ * results with libadt_const_lptr_valid() or libadt_const_lptr_in_bounds().
+ *
+ * \param lptr The lptr to index into.
+ * \param index The index.
+ *
+ * \returns A new libadt_const_lptr object, with the pointer
+ * 	and length modified to correspond to the new
+ * 	index.
+ */
+inline struct libadt_const_lptr libadt_const_lptr_index(
+	struct libadt_const_lptr lptr,
+	ssize_t index
+)
+{
+	const ssize_t byte_index = index * lptr.size;
+	return (struct libadt_const_lptr) {
+		(char*)lptr.buffer + byte_index,
+		lptr.size,
+		lptr.length - index,
 	};
 }
 
@@ -220,7 +375,9 @@ inline void *libadt_lptr_raw(struct libadt_lptr lptr)
  */
 inline bool libadt_lptr_allocated(struct libadt_lptr lptr)
 {
-	return !!libadt_lptr_raw(lptr);
+	return libadt_const_lptr_allocated(
+		libadt_const_lptr(lptr)
+	);
 }
 
 /**
@@ -236,7 +393,9 @@ inline bool libadt_lptr_allocated(struct libadt_lptr lptr)
  */
 inline bool libadt_lptr_in_bounds(struct libadt_lptr lptr)
 {
-	return lptr.length > 0;
+	return libadt_const_lptr_in_bounds(
+		libadt_const_lptr(lptr)
+	);
 }
 
 /**
@@ -278,11 +437,10 @@ inline struct libadt_lptr libadt_lptr_truncate(
 	size_t length
 )
 {
-	return (struct libadt_lptr) {
-		lptr.buffer,
-		lptr.size,
-		(ssize_t)length
-	};
+	return libadt_lptr_unconst_cast(
+		libadt_const_lptr_truncate(
+		libadt_const_lptr(lptr), length
+	));
 }
 
 /**
@@ -306,12 +464,10 @@ inline struct libadt_lptr libadt_lptr_index(
 	ssize_t index
 )
 {
-	const ssize_t byte_index = index * lptr.size;
-	return (struct libadt_lptr) {
-		(char*)lptr.buffer + byte_index,
-		lptr.size,
-		lptr.length - index,
-	};
+	return libadt_lptr_unconst_cast(
+		libadt_const_lptr_index(
+		libadt_const_lptr(lptr), index
+	));
 }
 
 #define LIBADT_LPTR_WITH(name, length, size) \
