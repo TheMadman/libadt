@@ -130,6 +130,56 @@ void test_libadt_lptr_truncate(void)
 	libadt_lptr_free(lptr);
 }
 
+void test_libadt_lptr_size(void)
+{
+	{
+		const_lptr_t lptr = {
+			.buffer = NULL,
+			.size = 1,
+			.length = 30,
+		};
+
+		assert(30 == libadt_const_lptr_size(lptr));
+	}
+
+	{
+		const_lptr_t lptr = {
+			.buffer = NULL,
+			.size = sizeof(int),
+			.length = 30,
+		};
+
+		assert(sizeof(int) * 30 == libadt_const_lptr_size(lptr));
+	}
+}
+
+void test_libadt_lptr_memcpy(void)
+{
+	{
+		char dest_buffer[30] = { 0 };
+
+		lptr_t dest = libadt_lptr_init_array(dest_buffer);
+
+		libadt_lptr_memcpy(dest, libadt_const_lptr_init_array("Hello, world!"));
+
+		assert(0 == strcmp(dest_buffer, "Hello, world!"));
+	}
+}
+
+void test_libadt_lptr_memmove(void)
+{
+	{
+		char dest_buffer[30] = { 0 };
+
+		lptr_t dest = libadt_lptr_init_array(dest_buffer);
+
+		libadt_lptr_memmove(dest, libadt_const_lptr_init_array("Hello, world!"));
+
+		assert(0 == strcmp(dest_buffer, "Hello, world!"));
+	}
+}
+
+
 int main()
 {
 	test_libadt_lptr_init_array();
@@ -138,4 +188,7 @@ int main()
 	test_libadt_lptr_free();
 	test_libadt_lptr_raw();
 	test_libadt_lptr_truncate();
+	test_libadt_lptr_size();
+	test_libadt_lptr_memcpy();
+	test_libadt_lptr_memmove();
 }

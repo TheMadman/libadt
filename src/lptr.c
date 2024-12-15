@@ -41,3 +41,12 @@ struct libadt_lptr libadt_lptr_index(
 	struct libadt_lptr lptr,
 	ssize_t index
 );
+ssize_t libadt_const_lptr_size(struct libadt_const_lptr lptr);
+struct libadt_lptr libadt_lptr_memcpy(
+	struct libadt_lptr dest,
+	struct libadt_const_lptr src
+);
+struct libadt_lptr libadt_lptr_memmove(
+	struct libadt_lptr dest,
+	struct libadt_const_lptr src
+);

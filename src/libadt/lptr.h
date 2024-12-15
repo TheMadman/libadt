@@ -31,6 +31,7 @@ extern "C" {
 #include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
+#include <string.h>
 
 #include "util.h"
 
@@ -476,6 +477,76 @@ inline struct libadt_lptr libadt_lptr_index(
 		libadt_lptr_allocated(name); \
 		libadt_lptr_free(name), name = (struct libadt_lptr){ 0 } \
 	)
+
+/**
+ * \brief Gets the total size of the memory pointed to by the lptr.
+ *
+ * \param lptr The pointer to get the total size for.
+ *
+ * \returns The total size of the memory pointed to.
+ */
+inline ssize_t libadt_const_lptr_size(struct libadt_const_lptr lptr)
+{
+	return lptr.size * lptr.length;
+}
+
+/**
+ * \brief Copies memory from src to dest.
+ *
+ * If src is smaller than dest, all of src is copied.
+ *
+ * If dest is smaller than src, only enough bytes are copied
+ * to fill dest.
+ *
+ * This function must not be used for memory that can overlap.
+ * For locations that can overlap, use libadt_lptr_memmove().
+ *
+ * \param dest The destination to copy memory to.
+ * \param src The data to copy.
+ *
+ * \returns dest.
+ */
+inline struct libadt_lptr libadt_lptr_memcpy(
+	struct libadt_lptr dest,
+	struct libadt_const_lptr src
+) {
+	const ssize_t
+		dest_size = libadt_const_lptr_size(libadt_const_lptr(dest)),
+		src_size = libadt_const_lptr_size(src),
+		limit = dest_size < src_size ? dest_size : src_size;
+
+	memcpy(dest.buffer, src.buffer, (size_t)limit);
+	return dest;
+}
+
+/**
+ * \brief Copies memory from src to dest.
+ *
+ * If src is smaller than dest, all of src is copied.
+ *
+ * If dest is smaller than src, only enough bytes are copied
+ * to fill dest.
+ *
+ * Supports overlapping memory regions.
+ *
+ * \param dest The destination to copy memory to.
+ * \param src The data to copy.
+ *
+ * \returns dest.
+ */
+inline struct libadt_lptr libadt_lptr_memmove(
+	struct libadt_lptr dest,
+	struct libadt_const_lptr src
+) {
+	const ssize_t
+		dest_size = libadt_const_lptr_size(libadt_const_lptr(dest)),
+		src_size = libadt_const_lptr_size(src),
+		limit = dest_size < src_size ? dest_size : src_size;
+
+	memmove(dest.buffer, src.buffer, (size_t)limit);
+	return dest;
+}
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

@@ -26,6 +26,14 @@
 char TEST_STR[] = "Hello, world!";
 wchar_t TEST_WSTR[] = L"Hello, world!";
 
+void test_lit(void)
+{
+	struct libadt_const_lptr result = libadt_str_literal(TEST_STR);
+	assert(result.buffer == TEST_STR);
+	assert(result.size == 1);
+	assert(result.length == (ssize_t)strlen(TEST_STR));
+}
+
 void test_str(void)
 {
 	struct libadt_lptr result = libadt_str(TEST_STR);
@@ -44,6 +52,7 @@ void test_wstr(void)
 
 int main()
 {
+	test_lit();
 	test_str();
 	test_wstr();
 }
