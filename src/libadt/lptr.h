@@ -304,9 +304,9 @@ inline struct libadt_const_lptr libadt_const_lptr_index(
 inline struct libadt_lptr libadt_lptr_calloc(size_t nmemb, size_t size)
 {
 	return (struct libadt_lptr) {
-		calloc(nmemb, size),
-		(ssize_t)nmemb,
-		(ssize_t)size,
+		.buffer = calloc(nmemb, size),
+		.size = (ssize_t)size,
+		.length = (ssize_t)nmemb,
 	};
 }
 
