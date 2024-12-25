@@ -169,8 +169,8 @@ inline const void *libadt_const_lptr_raw(struct libadt_const_lptr lptr)
  * \brief Returns whether allocation of the lptr was
  * 	successful.
  *
- * Only valid for an lptr returned by libadt_const_lptr_calloc()
- * or libadt_const_lptr_realloc().
+ * Only valid for an lptr returned by libadt_lptr_calloc()
+ * or libadt_lptr_realloc().
  *
  * \param lptr The lptr to test.
  *
