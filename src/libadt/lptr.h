@@ -473,7 +473,7 @@ inline struct libadt_lptr libadt_lptr_index(
 
 #define LIBADT_LPTR_WITH(name, length, size) \
 	for ( \
-		struct libadt_lptr name = libadt_lptr_calloc(length, size); \
+		struct libadt_lptr name = libadt_lptr_calloc((length), (size)); \
 		libadt_lptr_allocated(name); \
 		libadt_lptr_free(name), name = (struct libadt_lptr){ 0 } \
 	)
