@@ -35,6 +35,16 @@ extern "C" {
  */
 #define libadt_util_arrlength(array) (sizeof(array) / (sizeof(array[0])))
 
+/**
+ * \brief Returns the smaller value. Double-evaluates arguments.
+ */
+#define libadt_util_min(a, b) ((a) < (b) ? (a) : (b))
+
+/**
+ * \brief Returns the larger value. Double-evaluates arguments.
+ */
+#define libadt_util_max(a, b) ((a) > (b) ? (a) : (b))
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
