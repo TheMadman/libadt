@@ -50,3 +50,11 @@ struct libadt_lptr libadt_lptr_memmove(
 	struct libadt_lptr dest,
 	struct libadt_const_lptr src
 );
+struct libadt_lptr libadt_lptr_after(
+	struct libadt_lptr base,
+	struct libadt_lptr offset
+);
+struct libadt_const_lptr libadt_const_lptr_after(
+	struct libadt_const_lptr base,
+	struct libadt_const_lptr offset
+);

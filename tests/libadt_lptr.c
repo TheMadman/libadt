@@ -179,6 +179,33 @@ void test_libadt_lptr_memmove(void)
 	}
 }
 
+void test_libadt_lptr_after(void)
+{
+	{
+		char buffer[30] = { 0 };
+		lptr_t base = libadt_lptr_init_array(buffer);
+		lptr_t offset = libadt_lptr_truncate(libadt_lptr_index(base, 10), 10);
+
+		lptr_t result = libadt_lptr_after(base, offset);
+
+		assert(result.length == 10);
+		assert(result.buffer == &buffer[20]);
+	}
+}
+
+void test_libadt_const_lptr_after(void)
+{
+	{
+		char buffer[30] = { 0 };
+		const_lptr_t base = libadt_const_lptr_init_array(buffer);
+		const_lptr_t offset = libadt_const_lptr_truncate(libadt_const_lptr_index(base, 10), 10);
+
+		const_lptr_t result = libadt_const_lptr_after(base, offset);
+
+		assert(result.length == 10);
+		assert(result.buffer == &buffer[20]);
+	}
+}
 
 int main()
 {
@@ -191,4 +218,5 @@ int main()
 	test_libadt_lptr_size();
 	test_libadt_lptr_memcpy();
 	test_libadt_lptr_memmove();
+	test_libadt_lptr_after();
 }

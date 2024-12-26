@@ -471,13 +471,6 @@ inline struct libadt_lptr libadt_lptr_index(
 	));
 }
 
-#define LIBADT_LPTR_WITH(name, length, size) \
-	for ( \
-		struct libadt_lptr name = libadt_lptr_calloc((length), (size)); \
-		libadt_lptr_allocated(name); \
-		libadt_lptr_free(name), name = (struct libadt_lptr){ 0 } \
-	)
-
 /**
  * \brief Gets the total size of the memory pointed to by the lptr.
  *
@@ -488,6 +481,61 @@ inline struct libadt_lptr libadt_lptr_index(
 inline ssize_t libadt_const_lptr_size(struct libadt_const_lptr lptr)
 {
 	return lptr.size * lptr.length;
+}
+
+/**
+ * \brief Returns a new pointer into base starting from after
+ * 	offset.
+ *
+ * This function only makes sense to use where offset is the result
+ * of indexing into base and truncating to a sub-set.
+ *
+ * \param base The pointer to index into.
+ * \param offset A pointer from base.
+ *
+ * \returns A new pointer to the contents of base, after offset.
+ */
+inline struct libadt_lptr libadt_lptr_after(
+	struct libadt_lptr base,
+	struct libadt_lptr offset
+)
+{
+	const ssize_t remaining_offset =
+		((char*)offset.buffer
+		- (char*)base.buffer)
+		+ libadt_const_lptr_size(libadt_const_lptr(offset));
+	return libadt_lptr_index(base, remaining_offset);
+}
+
+#define LIBADT_LPTR_WITH(name, length, size) \
+	for ( \
+		struct libadt_lptr name = libadt_lptr_calloc((length), (size)); \
+		libadt_lptr_allocated(name); \
+		libadt_lptr_free(name), name = (struct libadt_lptr){ 0 } \
+	)
+
+/**
+ * \brief Returns a new pointer into base starting from after
+ * 	offset.
+ *
+ * This function only makes sense to use where offset is the result
+ * of indexing into base and truncating to a sub-set.
+ *
+ * \param base The pointer to index into.
+ * \param offset A pointer from base.
+ *
+ * \returns A new pointer to the contents of base, after offset.
+ */
+inline struct libadt_const_lptr libadt_const_lptr_after(
+	struct libadt_const_lptr base,
+	struct libadt_const_lptr offset
+)
+{
+	const ssize_t remaining_offset =
+		((char*)offset.buffer
+		- (char*)base.buffer)
+		+ libadt_const_lptr_size(offset);
+	return libadt_const_lptr_index(base, remaining_offset);
 }
 
 /**
