@@ -36,6 +36,11 @@ extern "C" {
 #define libadt_util_arrlength(array) (sizeof(array) / (sizeof(array[0])))
 
 /**
+ * \brief Returns a pointer one past the end of a static C array.
+ */
+#define libadt_util_arrend(array) (&(array)[libadt_util_arrlength(array)])
+
+/**
  * \brief Returns the smaller value. Double-evaluates arguments.
  */
 #define libadt_util_min(a, b) ((a) < (b) ? (a) : (b))
