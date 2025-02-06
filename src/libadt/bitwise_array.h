@@ -1,5 +1,5 @@
 /*
- * Bitter - A library for handling arrays of arbitrary bit-length numbers
+ * libadt - A library containing abstract data types
  * Copyright (C) 2024   Marcus Harrison
  *
  * This program is free software: you can redistribute it and/or modify
