@@ -23,14 +23,15 @@
 extern "C" {
 #endif
 
+#include "init.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <sys/types.h>
 #include <limits.h>
 #include <stdlib.h>
 
-// undefined at the end of the header file
-#define _LIBADT_MAX(a, b) ((a) > (b) ? (a) : (b))
+#include "util.h"
 
 /**
  * \file
@@ -102,7 +103,7 @@ struct libadt_bitwise_array libadt_bitwise_array_make(
  * \returns An initialized array on success, or an array
  * 	failing libadt_bitwise_array_valid() on failure.
  */
-inline struct libadt_bitwise_array libadt_bitwise_array_alloc(ssize_t length, int width)
+EXTERN inline struct libadt_bitwise_array libadt_bitwise_array_alloc(ssize_t length, int width)
 {
 	if (length < 0 || width < 0)
 		return (struct libadt_bitwise_array){ 0 };
@@ -123,7 +124,7 @@ inline struct libadt_bitwise_array libadt_bitwise_array_alloc(ssize_t length, in
  *
  * \returns True if the array is valid, false otherwise.
  */
-inline bool libadt_bitwise_array_valid(struct libadt_bitwise_array array)
+EXTERN inline bool libadt_bitwise_array_valid(struct libadt_bitwise_array array)
 {
 	return array.bits != NULL;
 }
@@ -133,7 +134,7 @@ inline bool libadt_bitwise_array_valid(struct libadt_bitwise_array array)
  *
  * \param array The array to free.
  */
-inline void libadt_bitwise_array_free(struct libadt_bitwise_array array)
+EXTERN inline void libadt_bitwise_array_free(struct libadt_bitwise_array array)
 {
 	free(array.bits);
 }
@@ -147,7 +148,7 @@ inline void libadt_bitwise_array_free(struct libadt_bitwise_array array)
  *
  * \returns The number stored at the given element.
  */
-inline unsigned int libadt_bitwise_array_get(
+EXTERN inline unsigned int libadt_bitwise_array_get(
 	struct libadt_bitwise_array array,
 	ssize_t index
 )
@@ -190,7 +191,7 @@ inline unsigned int libadt_bitwise_array_get(
 	for (int bits_remaining = array.width; bits_remaining > 0; location++) {
 		const libadt_bitwise_array_bit
 			ones = (libadt_bitwise_array_bit)~0u,
-			right_bits_ignore = (libadt_bitwise_array_bit)_LIBADT_MAX(0, CHAR_BIT - start_from - bits_remaining),
+			right_bits_ignore = (libadt_bitwise_array_bit)libadt_util_max(0, CHAR_BIT - start_from - bits_remaining),
 			mask_right = ones >> start_from,
 			mask_left = ones << right_bits_ignore,
 			mask = mask_left & mask_right,
@@ -215,7 +216,7 @@ inline unsigned int libadt_bitwise_array_get(
  * \param index The location in the array to set the value at.
  * \param value The value to set.
  */
-inline void libadt_bitwise_array_set(
+EXTERN inline void libadt_bitwise_array_set(
 	struct libadt_bitwise_array array,
 	ssize_t index,
 	unsigned int value
@@ -229,7 +230,7 @@ inline void libadt_bitwise_array_set(
 	for (int bits_remaining = array.width; bits_remaining > 0; location++) {
 		const libadt_bitwise_array_bit
 			ones = (libadt_bitwise_array_bit)~0u,
-			right_bits_ignore = (libadt_bitwise_array_bit)_LIBADT_MAX(0, (CHAR_BIT - start_from - bits_remaining)),
+			right_bits_ignore = (libadt_bitwise_array_bit)libadt_util_max(0, (CHAR_BIT - start_from - bits_remaining)),
 			mask_right = ones >> start_from,
 			mask_left = ones << right_bits_ignore,
 			mask = ~(mask_left & mask_right),
@@ -242,7 +243,7 @@ inline void libadt_bitwise_array_set(
 		start_from = 0;
 	}
 }
-#undef _LIBADT_MAX
+#undef libadt_util_max
 
 #ifdef __cplusplus
 } // extern "C"

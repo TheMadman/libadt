@@ -28,6 +28,8 @@ extern "C" {
  * \copydoc libadt_lptr
  */
 
+#include "init.h"
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
@@ -108,7 +110,7 @@ struct libadt_lptr {
  *
  * \returns The const pointer.
  */
-inline struct libadt_const_lptr libadt_const_lptr(struct libadt_lptr ptr)
+EXTERN inline struct libadt_const_lptr libadt_const_lptr(struct libadt_lptr ptr)
 {
 	return (struct libadt_const_lptr) {
 		.buffer = ptr.buffer,
@@ -127,7 +129,7 @@ inline struct libadt_const_lptr libadt_const_lptr(struct libadt_lptr ptr)
  *
  * \returns A non-const libadt_lptr.
  */
-inline struct libadt_lptr libadt_lptr_unconst_cast(
+EXTERN inline struct libadt_lptr libadt_lptr_unconst_cast(
 	struct libadt_const_lptr cptr
 )
 {
@@ -160,7 +162,7 @@ inline struct libadt_lptr libadt_lptr_unconst_cast(
  *
  * \returns a void pointer.
  */
-inline const void *libadt_const_lptr_raw(struct libadt_const_lptr lptr)
+EXTERN inline const void *libadt_const_lptr_raw(struct libadt_const_lptr lptr)
 {
 	return lptr.buffer;
 }
@@ -176,7 +178,7 @@ inline const void *libadt_const_lptr_raw(struct libadt_const_lptr lptr)
  *
  * \returns true if allocation succeeded, false otherwise.
  */
-inline bool libadt_const_lptr_allocated(struct libadt_const_lptr lptr)
+EXTERN inline bool libadt_const_lptr_allocated(struct libadt_const_lptr lptr)
 {
 	return !!libadt_const_lptr_raw(lptr);
 }
@@ -192,7 +194,7 @@ inline bool libadt_const_lptr_allocated(struct libadt_const_lptr lptr)
  * \returns true if the pointer is still in-bounds,
  * 	false if it is out-of-bounds.
  */
-inline bool libadt_const_lptr_in_bounds(struct libadt_const_lptr lptr)
+EXTERN inline bool libadt_const_lptr_in_bounds(struct libadt_const_lptr lptr)
 {
 	return lptr.length > 0;
 }
@@ -207,7 +209,7 @@ inline bool libadt_const_lptr_in_bounds(struct libadt_const_lptr lptr)
  *
  * \returns true if the pointer is valid, false otherwise.
  */
-inline bool libadt_const_lptr_valid(struct libadt_const_lptr lptr)
+EXTERN inline bool libadt_const_lptr_valid(struct libadt_const_lptr lptr)
 {
 	return libadt_const_lptr_allocated(lptr)
 		&& libadt_const_lptr_in_bounds(lptr);
@@ -231,7 +233,7 @@ inline bool libadt_const_lptr_valid(struct libadt_const_lptr lptr)
  * \returns A new libadt_const_lptr object, with the length reduced
  * 	if the new length was valid, or unmodified if not.
  */
-inline struct libadt_const_lptr libadt_const_lptr_truncate(
+EXTERN inline struct libadt_const_lptr libadt_const_lptr_truncate(
 	struct libadt_const_lptr lptr,
 	size_t length
 )
@@ -259,7 +261,7 @@ inline struct libadt_const_lptr libadt_const_lptr_truncate(
  * 	and length modified to correspond to the new
  * 	index.
  */
-inline struct libadt_const_lptr libadt_const_lptr_index(
+EXTERN inline struct libadt_const_lptr libadt_const_lptr_index(
 	struct libadt_const_lptr lptr,
 	ssize_t index
 )
@@ -301,7 +303,7 @@ inline struct libadt_const_lptr libadt_const_lptr_index(
  * 	if allocation succeeded, or failing libadt_lptr_valid() if
  * 	allocation failed.
  */
-inline struct libadt_lptr libadt_lptr_calloc(size_t nmemb, size_t size)
+EXTERN inline struct libadt_lptr libadt_lptr_calloc(size_t nmemb, size_t size)
 {
 	return (struct libadt_lptr) {
 		.buffer = calloc(nmemb, size),
@@ -321,7 +323,7 @@ inline struct libadt_lptr libadt_lptr_calloc(size_t nmemb, size_t size)
  * 	new length if reallocation was successful or the
  * 	old length if it failed.
  */
-inline struct libadt_lptr libadt_lptr_reallocarray(
+EXTERN inline struct libadt_lptr libadt_lptr_reallocarray(
 	struct libadt_lptr lptr,
 	size_t nmemb
 )
@@ -345,7 +347,7 @@ inline struct libadt_lptr libadt_lptr_reallocarray(
  *
  * \returns A libadt_lptr failing libadt_lptr_valid().
  */
-inline struct libadt_lptr libadt_lptr_free(struct libadt_lptr lptr)
+EXTERN inline struct libadt_lptr libadt_lptr_free(struct libadt_lptr lptr)
 {
 	free(lptr.buffer);
 	return (struct libadt_lptr) { 0 };
@@ -358,7 +360,7 @@ inline struct libadt_lptr libadt_lptr_free(struct libadt_lptr lptr)
  *
  * \returns a void pointer.
  */
-inline void *libadt_lptr_raw(struct libadt_lptr lptr)
+EXTERN inline void *libadt_lptr_raw(struct libadt_lptr lptr)
 {
 	return lptr.buffer;
 }
@@ -374,7 +376,7 @@ inline void *libadt_lptr_raw(struct libadt_lptr lptr)
  *
  * \returns true if allocation succeeded, false otherwise.
  */
-inline bool libadt_lptr_allocated(struct libadt_lptr lptr)
+EXTERN inline bool libadt_lptr_allocated(struct libadt_lptr lptr)
 {
 	return libadt_const_lptr_allocated(
 		libadt_const_lptr(lptr)
@@ -392,7 +394,7 @@ inline bool libadt_lptr_allocated(struct libadt_lptr lptr)
  * \returns true if the pointer is still in-bounds,
  * 	false if it is out-of-bounds.
  */
-inline bool libadt_lptr_in_bounds(struct libadt_lptr lptr)
+EXTERN inline bool libadt_lptr_in_bounds(struct libadt_lptr lptr)
 {
 	return libadt_const_lptr_in_bounds(
 		libadt_const_lptr(lptr)
@@ -409,7 +411,7 @@ inline bool libadt_lptr_in_bounds(struct libadt_lptr lptr)
  *
  * \returns true if the pointer is valid, false otherwise.
  */
-inline bool libadt_lptr_valid(struct libadt_lptr lptr)
+EXTERN inline bool libadt_lptr_valid(struct libadt_lptr lptr)
 {
 	return libadt_lptr_allocated(lptr)
 		&& libadt_lptr_in_bounds(lptr);
@@ -433,7 +435,7 @@ inline bool libadt_lptr_valid(struct libadt_lptr lptr)
  * \returns A new libadt_lptr object, with the length reduced
  * 	if the new length was valid, or unmodified if not.
  */
-inline struct libadt_lptr libadt_lptr_truncate(
+EXTERN inline struct libadt_lptr libadt_lptr_truncate(
 	struct libadt_lptr lptr,
 	size_t length
 )
@@ -460,7 +462,7 @@ inline struct libadt_lptr libadt_lptr_truncate(
  * 	and length modified to correspond to the new
  * 	index.
  */
-inline struct libadt_lptr libadt_lptr_index(
+EXTERN inline struct libadt_lptr libadt_lptr_index(
 	struct libadt_lptr lptr,
 	ssize_t index
 )
@@ -478,7 +480,7 @@ inline struct libadt_lptr libadt_lptr_index(
  *
  * \returns The total size of the memory pointed to.
  */
-inline ssize_t libadt_const_lptr_size(struct libadt_const_lptr lptr)
+EXTERN inline ssize_t libadt_const_lptr_size(struct libadt_const_lptr lptr)
 {
 	return lptr.size * lptr.length;
 }
@@ -495,7 +497,7 @@ inline ssize_t libadt_const_lptr_size(struct libadt_const_lptr lptr)
  *
  * \returns A new pointer to the contents of base, after offset.
  */
-inline struct libadt_lptr libadt_lptr_after(
+EXTERN inline struct libadt_lptr libadt_lptr_after(
 	struct libadt_lptr base,
 	struct libadt_lptr offset
 )
@@ -526,7 +528,7 @@ inline struct libadt_lptr libadt_lptr_after(
  *
  * \returns A new pointer to the contents of base, after offset.
  */
-inline struct libadt_const_lptr libadt_const_lptr_after(
+EXTERN inline struct libadt_const_lptr libadt_const_lptr_after(
 	struct libadt_const_lptr base,
 	struct libadt_const_lptr offset
 )
@@ -554,7 +556,7 @@ inline struct libadt_const_lptr libadt_const_lptr_after(
  *
  * \returns dest.
  */
-inline struct libadt_lptr libadt_lptr_memcpy(
+EXTERN inline struct libadt_lptr libadt_lptr_memcpy(
 	struct libadt_lptr dest,
 	struct libadt_const_lptr src
 ) {
@@ -582,7 +584,7 @@ inline struct libadt_lptr libadt_lptr_memcpy(
  *
  * \returns dest.
  */
-inline struct libadt_lptr libadt_lptr_memmove(
+EXTERN inline struct libadt_lptr libadt_lptr_memmove(
 	struct libadt_lptr dest,
 	struct libadt_const_lptr src
 ) {
