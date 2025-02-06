@@ -103,7 +103,7 @@ struct libadt_bitwise_array libadt_bitwise_array_make(
  * \returns An initialized array on success, or an array
  * 	failing libadt_bitwise_array_valid() on failure.
  */
-EXTERN inline struct libadt_bitwise_array libadt_bitwise_array_alloc(ssize_t length, int width)
+EXPORT inline struct libadt_bitwise_array libadt_bitwise_array_alloc(ssize_t length, int width)
 {
 	if (length < 0 || width < 0)
 		return (struct libadt_bitwise_array){ 0 };
@@ -124,7 +124,7 @@ EXTERN inline struct libadt_bitwise_array libadt_bitwise_array_alloc(ssize_t len
  *
  * \returns True if the array is valid, false otherwise.
  */
-EXTERN inline bool libadt_bitwise_array_valid(struct libadt_bitwise_array array)
+EXPORT inline bool libadt_bitwise_array_valid(struct libadt_bitwise_array array)
 {
 	return array.bits != NULL;
 }
@@ -134,7 +134,7 @@ EXTERN inline bool libadt_bitwise_array_valid(struct libadt_bitwise_array array)
  *
  * \param array The array to free.
  */
-EXTERN inline void libadt_bitwise_array_free(struct libadt_bitwise_array array)
+EXPORT inline void libadt_bitwise_array_free(struct libadt_bitwise_array array)
 {
 	free(array.bits);
 }
@@ -148,7 +148,7 @@ EXTERN inline void libadt_bitwise_array_free(struct libadt_bitwise_array array)
  *
  * \returns The number stored at the given element.
  */
-EXTERN inline unsigned int libadt_bitwise_array_get(
+EXPORT inline unsigned int libadt_bitwise_array_get(
 	struct libadt_bitwise_array array,
 	ssize_t index
 )
@@ -216,7 +216,7 @@ EXTERN inline unsigned int libadt_bitwise_array_get(
  * \param index The location in the array to set the value at.
  * \param value The value to set.
  */
-EXTERN inline void libadt_bitwise_array_set(
+EXPORT inline void libadt_bitwise_array_set(
 	struct libadt_bitwise_array array,
 	ssize_t index,
 	unsigned int value

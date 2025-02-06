@@ -67,7 +67,7 @@ extern "C" {
  *
  * \sa libadt_wstr
  */
-EXTERN inline struct libadt_lptr libadt_str(char *const str)
+EXPORT inline struct libadt_lptr libadt_str(char *const str)
 {
 	return (struct libadt_lptr) {
 		.buffer = str,
@@ -92,7 +92,7 @@ EXTERN inline struct libadt_lptr libadt_str(char *const str)
  *
  * \sa libadt_str
  */
-EXTERN inline struct libadt_lptr libadt_wstr(wchar_t *const str)
+EXPORT inline struct libadt_lptr libadt_wstr(wchar_t *const str)
 {
 	return (struct libadt_lptr) {
 		.buffer = str,
