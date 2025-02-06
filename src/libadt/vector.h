@@ -23,6 +23,8 @@
 extern "C" {
 #endif
 
+#include "init.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 
