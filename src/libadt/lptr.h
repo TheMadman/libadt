@@ -34,6 +34,7 @@ extern "C" {
 #include <stdbool.h>
 #include <limits.h>
 #include <string.h>
+#include <sys/types.h>
 
 #include "util.h"
 
