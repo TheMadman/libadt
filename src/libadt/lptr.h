@@ -141,6 +141,22 @@ EXPORT inline struct libadt_lptr libadt_lptr_unconst_cast(
 
 /**
  * \brief A convenience macro for initializing
+ * 	an lptr from an existing object.
+ *
+ * Example:
+ * \code
+ * const foo_t foo = { 0 };
+ * struct libadt_const_lptr ptr = libadt_const_lptr_init(&foo);
+ * \code
+ *
+ * \param ptr A pointer to the object to initialize from.
+ * \returns A new libadt_const_lptr object.
+ */
+#define libadt_const_lptr_init(ptr) \
+	((struct libadt_const_lptr){ (ptr), sizeof(*ptr), 1 })
+
+/**
+ * \brief A convenience macro for initializing
  * 	an lptr from an existing fixed-length array.
  *
  * Example:
@@ -154,7 +170,7 @@ EXPORT inline struct libadt_lptr libadt_lptr_unconst_cast(
  * \returns A new libadt_const_lptr object.
  */
 #define libadt_const_lptr_init_array(array) \
-	((struct libadt_const_lptr){ (array), (sizeof(array[0])), libadt_util_arrlength(array) })
+	((struct libadt_const_lptr){ (array), (sizeof((array)[0])), libadt_util_arrlength(array) })
 
 /**
  * \brief Returns raw pointer the given lptr contains.
@@ -274,6 +290,22 @@ EXPORT inline struct libadt_const_lptr libadt_const_lptr_index(
 		lptr.length - index,
 	};
 }
+
+/**
+ * \brief A convenience macro for initializing
+ * 	an lptr from an existing object.
+ *
+ * Example:
+ * \code
+ * foo_t foo = { 0 };
+ * struct libadt_lptr ptr = libadt_lptr_init(&foo);
+ * \endcode
+ *
+ * \param ptr A pointer to the object to initialize from.
+ * \returns A new libadt_lptr object.
+ */
+#define libadt_lptr_init(ptr) \
+	((struct libadt_lptr){ (ptr), (sizeof(*ptr)), 1 })
 
 /**
  * \brief A convenience macro for initializing

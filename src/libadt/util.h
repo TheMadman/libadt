@@ -33,7 +33,7 @@ extern "C" {
 /**
  * \brief Calculates the length of a static C array.
  */
-#define libadt_util_arrlength(array) (sizeof(array) / (sizeof(array[0])))
+#define libadt_util_arrlength(array) (sizeof(array) / (sizeof((array)[0])))
 
 /**
  * \brief Returns a pointer one past the end of a static C array.
