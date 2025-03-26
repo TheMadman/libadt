@@ -29,7 +29,7 @@
 // the compiler defaults.
 //
 // For example: for GCC, set
-// CFLAGS+="-fvisibility=hidden -fvisibility-inline-hidden -DEXPORT="'__attribute__((visibility("hidden")))"'
+// CFLAGS+="-fvisibility=hidden -fvisibility-inline-hidden -DEXPORT='"'__attribute__((visibility("default")))'"'"
 #ifndef EXPORT
 #define EXPORT
 #endif
