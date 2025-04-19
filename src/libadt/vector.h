@@ -155,7 +155,7 @@ EXPORT bool libadt_vector_valid(struct libadt_vector vector);
  * 	to libadt_vector_init()
  */
 #define LIBADT_VECTOR_WITH(NAME, SIZE, INITIAL_CAPACITY) \
-EXPORT for ( \
+for ( \
 	struct libadt_vector \
 		NAME = libadt_vector_init(SIZE, INITIAL_CAPACITY); \
 	libadt_vector_valid(NAME); \
