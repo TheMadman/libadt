@@ -259,7 +259,7 @@ EXPORT struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector);
  * 	capacity. If the truncate failed, the old vector is
  * 	returned.
  */
-EXPORT struct libadt_vector libadt_vector_trunc(
+EXPORT struct libadt_vector libadt_vector_truncate(
 	struct libadt_vector vector,
 	size_t new_capacity
 );

@@ -6,7 +6,7 @@
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
-struct libadt_vector libadt_vector_trunc(
+struct libadt_vector libadt_vector_truncate(
 	struct libadt_vector vector,
 	size_t new_capacity
 )
@@ -32,7 +32,7 @@ struct libadt_vector libadt_vector_init(size_t size, size_t initial_capacity)
 	};
 
 	if (initial_capacity) {
-		struct libadt_vector attempt = libadt_vector_trunc(result, initial_capacity);
+		struct libadt_vector attempt = libadt_vector_truncate(result, initial_capacity);
 		if (libadt_vector_identity(attempt, result))
 			return (struct libadt_vector) { 0 };
 		else
@@ -73,7 +73,7 @@ struct libadt_vector libadt_vector_append_n(
 		);
 
 		struct libadt_vector
-			new = libadt_vector_trunc(vector, new_capacity);
+			new = libadt_vector_truncate(vector, new_capacity);
 
 		if (libadt_vector_identity(new, vector))
 			return vector;
@@ -96,7 +96,7 @@ struct libadt_vector (libadt_vector_append)(
 
 struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector)
 {
-	return libadt_vector_trunc(vector, vector.length);
+	return libadt_vector_truncate(vector, vector.length);
 }
 
 void *(libadt_vector_index)(struct libadt_vector vector, size_t index)

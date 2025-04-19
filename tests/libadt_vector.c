@@ -27,7 +27,7 @@
 #define index libadt_vector_index
 #define vacuum libadt_vector_vacuum
 #define vector_end libadt_vector_end
-#define truncate libadt_vector_trunc
+#define truncate libadt_vector_truncate
 #define pop libadt_vector_pop
 typedef struct libadt_vector vector;
 
