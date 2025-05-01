@@ -515,6 +515,8 @@ EXPORT inline struct libadt_lptr libadt_lptr_index(
  */
 EXPORT inline ssize_t libadt_const_lptr_size(struct libadt_const_lptr lptr)
 {
+	if (SSIZE_MAX / lptr.length < lptr.size)
+		return -1;
 	return lptr.size * lptr.length;
 }
 
@@ -523,7 +525,7 @@ EXPORT inline ssize_t libadt_const_lptr_size(struct libadt_const_lptr lptr)
  * 	offset.
  *
  * This function only makes sense to use where offset is the result
- * of indexing into base and truncating to a sub-set.
+ * of indexing into base and truncating the result.
  *
  * \param base The pointer to index into.
  * \param offset A pointer from base.
@@ -573,6 +575,63 @@ EXPORT inline struct libadt_const_lptr libadt_const_lptr_after(
 	return libadt_const_lptr_index(base, remaining_offset);
 }
 
+inline struct libadt_lptr _libadt_lptr_memory_copy_op(
+	struct libadt_lptr dest,
+	struct libadt_const_lptr src,
+	struct libadt_lptr (*self)(struct libadt_lptr, struct libadt_const_lptr),
+	void *(*syscall)(void *, const void *, size_t)
+) {
+	struct libadt_lptr first_dest = dest;
+	struct libadt_const_lptr first_src = src;
+	const ssize_t
+		dest_size = libadt_const_lptr_size(libadt_const_lptr(dest)),
+		src_size = libadt_const_lptr_size(src),
+		limit = dest_size < src_size ? dest_size : src_size;
+
+	const bool overflow = dest_size < 0 || src_size < 0;
+	if (overflow) {
+		const ssize_t second_dest_start = dest.length / 2;
+
+		first_dest = libadt_lptr_truncate(
+			first_dest,
+			(size_t)second_dest_start
+		);
+		struct libadt_lptr
+			second_dest = libadt_lptr_index(
+				dest,
+				second_dest_start
+			);
+		const ssize_t new_total_size = libadt_const_lptr_size(libadt_const_lptr(first_dest));
+		if (new_total_size < 0) {
+			// TODO: CAN this overflow?
+		}
+
+		// If the sizes between the src and dest don't divide
+		// evenly, we allow the first and second src to overlap
+		// so that all bytes are copied, even if some are copied
+		// twice
+		//
+		// Better than leaving a gap of uncopied bytes
+		const ssize_t
+			second_src_start = new_total_size / src.size,
+			second_src_remainder = new_total_size % src.size;
+		first_src = libadt_const_lptr_truncate(
+			first_src,
+			(size_t)(second_src_start + !!second_src_remainder)
+		);
+		struct libadt_const_lptr
+			second_src = libadt_const_lptr_index(
+				src,
+				second_src_start
+			);
+
+		self(second_dest, second_src);
+	}
+
+	syscall(first_dest.buffer, first_src.buffer, (size_t)limit);
+	return dest;
+}
+
 /**
  * \brief Copies memory from src to dest.
  *
@@ -593,13 +652,12 @@ EXPORT inline struct libadt_lptr libadt_lptr_memcpy(
 	struct libadt_lptr dest,
 	struct libadt_const_lptr src
 ) {
-	const ssize_t
-		dest_size = libadt_const_lptr_size(libadt_const_lptr(dest)),
-		src_size = libadt_const_lptr_size(src),
-		limit = dest_size < src_size ? dest_size : src_size;
-
-	memcpy(dest.buffer, src.buffer, (size_t)limit);
-	return dest;
+	return _libadt_lptr_memory_copy_op(
+		dest,
+		src,
+		libadt_lptr_memcpy,
+		memcpy
+	);
 }
 
 /**
@@ -621,13 +679,12 @@ EXPORT inline struct libadt_lptr libadt_lptr_memmove(
 	struct libadt_lptr dest,
 	struct libadt_const_lptr src
 ) {
-	const ssize_t
-		dest_size = libadt_const_lptr_size(libadt_const_lptr(dest)),
-		src_size = libadt_const_lptr_size(src),
-		limit = dest_size < src_size ? dest_size : src_size;
-
-	memmove(dest.buffer, src.buffer, (size_t)limit);
-	return dest;
+	return _libadt_lptr_memory_copy_op(
+		dest,
+		src,
+		libadt_lptr_memmove,
+		memmove
+	);
 }
 
 #ifdef __cplusplus
