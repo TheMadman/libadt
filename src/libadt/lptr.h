@@ -603,7 +603,7 @@ inline struct libadt_lptr _libadt_lptr_memory_copy_op(
 			);
 		const ssize_t new_total_size = libadt_const_lptr_size(libadt_const_lptr(first_dest));
 		if (new_total_size < 0) {
-			// TODO: CAN this overflow?
+			// TODO: what do we do with an overflow here?
 		}
 
 		// If the sizes between the src and dest don't divide
