@@ -64,3 +64,7 @@ struct libadt_const_lptr libadt_const_lptr_after(
 	struct libadt_const_lptr base,
 	struct libadt_const_lptr offset
 );
+int libadt_const_lptr_equal(
+	struct libadt_const_lptr first,
+	struct libadt_const_lptr second
+);

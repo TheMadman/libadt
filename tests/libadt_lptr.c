@@ -207,6 +207,57 @@ void test_libadt_const_lptr_after(void)
 	}
 }
 
+void test_libadt_const_lptr_equal(void)
+{
+	{
+		const char
+			first[] = "Hello, world!",
+			second[] = "Hello, world!";
+
+		const_lptr_t
+			first_ptr = libadt_const_lptr_init_array(first),
+			second_ptr = libadt_const_lptr_init_array(second);
+
+		assert(libadt_const_lptr_equal(first_ptr, second_ptr));
+	}
+
+	{
+		const char first[] = "Hello, world!";
+		const wchar_t second[] = L"Hello, world!";
+
+		const_lptr_t
+			first_ptr = libadt_const_lptr_init_array(first),
+			second_ptr = libadt_const_lptr_init_array(second);
+
+		assert(!libadt_const_lptr_equal(first_ptr, second_ptr));
+	}
+
+	{
+		const char
+			first[] = "Hello, world!",
+			second[] = "Goodbye, world!";
+
+		const_lptr_t
+			first_ptr = libadt_const_lptr_init_array(first),
+			second_ptr = libadt_const_lptr_init_array(second);
+
+		assert(!libadt_const_lptr_equal(first_ptr, second_ptr));
+	}
+
+	{
+		const char
+			// deliberately padded to match length
+			first[] = "Hello, world!  ",
+			second[] = "Goodbye, world!";
+
+		const_lptr_t
+			first_ptr = libadt_const_lptr_init_array(first),
+			second_ptr = libadt_const_lptr_init_array(second);
+
+		assert(!libadt_const_lptr_equal(first_ptr, second_ptr));
+	}
+}
+
 int main()
 {
 	test_libadt_lptr_init_array();
@@ -219,4 +270,5 @@ int main()
 	test_libadt_lptr_memcpy();
 	test_libadt_lptr_memmove();
 	test_libadt_lptr_after();
+	test_libadt_const_lptr_equal();
 }

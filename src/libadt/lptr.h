@@ -687,6 +687,37 @@ EXPORT inline struct libadt_lptr libadt_lptr_memmove(
 	);
 }
 
+/**
+ * \brief Equality comparison of pointer contents.
+ *
+ * Two pointers are considered equal if they point
+ * to members of the same size, have the same length,
+ * and have the same memory contents.
+ *
+ * \param first The first pointer
+ * \param second The second pointer
+ *
+ * \returns 0 if the pointers are not-equal, 1 if equal.
+ */
+EXPORT inline int libadt_const_lptr_equal(
+	struct libadt_const_lptr first,
+	struct libadt_const_lptr second
+)
+{
+	if (
+		first.length != second.length
+		|| first.size != second.size
+	) {
+		return 0;
+	}
+
+	return !memcmp(
+		first.buffer,
+		second.buffer,
+		(size_t)libadt_const_lptr_size(first)
+	);
+}
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
