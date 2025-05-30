@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-#include "libadt_export.h"
+#include "libadt/libadt_export.h"
 #include "libadt/util.h"
 #include "libadt/lptr.h"
 #include "libadt/str.h"
