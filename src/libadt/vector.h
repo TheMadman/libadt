@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-#include "init.h"
+#include "libadt_export.h"
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -90,7 +90,7 @@ struct libadt_vector {
  * 	vector failing libadt_vector_valid() if an allocation
  * 	attempt failed.
  */
-EXPORT struct libadt_vector libadt_vector_init(size_t size, size_t initial_capacity);
+LIBADT_EXPORT struct libadt_vector libadt_vector_init(size_t size, size_t initial_capacity);
 
 /**
  * \public \memberof libadt_vector
@@ -100,7 +100,7 @@ EXPORT struct libadt_vector libadt_vector_init(size_t size, size_t initial_capac
  *
  * \returns A vector failing libadt_vector_valid().
  */
-EXPORT struct libadt_vector libadt_vector_free(struct libadt_vector vector);
+LIBADT_EXPORT struct libadt_vector libadt_vector_free(struct libadt_vector vector);
 
 /**
  * \public \memberof libadt_vector
@@ -113,7 +113,7 @@ EXPORT struct libadt_vector libadt_vector_free(struct libadt_vector vector);
  *
  * \returns True if the vector is valid for use, false otherwise.
  */
-EXPORT bool libadt_vector_valid(struct libadt_vector vector);
+LIBADT_EXPORT bool libadt_vector_valid(struct libadt_vector vector);
 #define libadt_vector_valid(vec) (!!(vec).size)
 
 /**
@@ -178,7 +178,7 @@ for ( \
  *
  * \returns True if the vectors are identical, false otherwise.
  */
-EXPORT bool libadt_vector_identity(
+LIBADT_EXPORT bool libadt_vector_identity(
 	struct libadt_vector first,
 	struct libadt_vector second
 );
@@ -203,7 +203,7 @@ EXPORT bool libadt_vector_identity(
  * \returns A vector with the new data appended. If the append
  * 	failed, the old vector is returned.
  */
-EXPORT struct libadt_vector libadt_vector_append_n(
+LIBADT_EXPORT struct libadt_vector libadt_vector_append_n(
 	struct libadt_vector vector,
 	void *data,
 	size_t number
@@ -225,7 +225,7 @@ EXPORT struct libadt_vector libadt_vector_append_n(
  * \returns A vector with the new element appended. On error,
  * 	the old vector is returned.
  */
-EXPORT struct libadt_vector libadt_vector_append(
+LIBADT_EXPORT struct libadt_vector libadt_vector_append(
 	struct libadt_vector vector,
 	void *data
 );
@@ -239,7 +239,7 @@ EXPORT struct libadt_vector libadt_vector_append(
  *
  * \param vector The vector to resize.
  */
-EXPORT struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector);
+LIBADT_EXPORT struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector);
 
 /**
  * \public \memberof libadt_vector
@@ -259,7 +259,7 @@ EXPORT struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector);
  * 	capacity. If the truncate failed, the old vector is
  * 	returned.
  */
-EXPORT struct libadt_vector libadt_vector_truncate(
+LIBADT_EXPORT struct libadt_vector libadt_vector_truncate(
 	struct libadt_vector vector,
 	size_t new_capacity
 );
@@ -280,7 +280,7 @@ EXPORT struct libadt_vector libadt_vector_truncate(
  *
  * \returns A pointer to the item at the given index.
  */
-EXPORT void *libadt_vector_index(struct libadt_vector vector, size_t index);
+LIBADT_EXPORT void *libadt_vector_index(struct libadt_vector vector, size_t index);
 
 // wow this is ugly
 #define libadt_vector_index(vec, index) \
@@ -298,7 +298,7 @@ EXPORT void *libadt_vector_index(struct libadt_vector vector, size_t index);
  *
  * \returns A pointer one past the end of the last element.
  */
-EXPORT void *libadt_vector_end(struct libadt_vector vector);
+LIBADT_EXPORT void *libadt_vector_end(struct libadt_vector vector);
 #define libadt_vector_end(vec) \
 	libadt_vector_index((vec), (vec).length)
 
@@ -316,7 +316,7 @@ EXPORT void *libadt_vector_end(struct libadt_vector vector);
  *
  * \returns The vector with the modified length.
  */
-EXPORT struct libadt_vector libadt_vector_pop(struct libadt_vector vector, void *out);
+LIBADT_EXPORT struct libadt_vector libadt_vector_pop(struct libadt_vector vector, void *out);
 
 #ifdef __cplusplus
 } // extern "C"
