@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-#include "libadt_export.h"
+
 
 #include <string.h>
 #include <wchar.h>
@@ -67,7 +67,7 @@ extern "C" {
  *
  * \sa libadt_wstr
  */
-LIBADT_EXPORT inline struct libadt_lptr libadt_str(char *const str)
+inline struct libadt_lptr libadt_str(char *const str)
 {
 	return (struct libadt_lptr) {
 		.buffer = str,
@@ -92,7 +92,7 @@ LIBADT_EXPORT inline struct libadt_lptr libadt_str(char *const str)
  *
  * \sa libadt_str
  */
-LIBADT_EXPORT inline struct libadt_lptr libadt_wstr(wchar_t *const str)
+inline struct libadt_lptr libadt_wstr(wchar_t *const str)
 {
 	return (struct libadt_lptr) {
 		.buffer = str,

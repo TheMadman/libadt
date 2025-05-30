@@ -23,7 +23,7 @@
 extern "C" {
 #endif
 
-#include "libadt_export.h"
+
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -103,7 +103,7 @@ struct libadt_bitwise_array libadt_bitwise_array_make(
  * \returns An initialized array on success, or an array
  * 	failing libadt_bitwise_array_valid() on failure.
  */
-LIBADT_EXPORT inline struct libadt_bitwise_array libadt_bitwise_array_alloc(ssize_t length, int width)
+inline struct libadt_bitwise_array libadt_bitwise_array_alloc(ssize_t length, int width)
 {
 	if (length < 0 || width < 0)
 		return (struct libadt_bitwise_array){ 0 };
@@ -124,7 +124,7 @@ LIBADT_EXPORT inline struct libadt_bitwise_array libadt_bitwise_array_alloc(ssiz
  *
  * \returns True if the array is valid, false otherwise.
  */
-LIBADT_EXPORT inline bool libadt_bitwise_array_valid(struct libadt_bitwise_array array)
+inline bool libadt_bitwise_array_valid(struct libadt_bitwise_array array)
 {
 	return array.bits != NULL;
 }
@@ -134,7 +134,7 @@ LIBADT_EXPORT inline bool libadt_bitwise_array_valid(struct libadt_bitwise_array
  *
  * \param array The array to free.
  */
-LIBADT_EXPORT inline void libadt_bitwise_array_free(struct libadt_bitwise_array array)
+inline void libadt_bitwise_array_free(struct libadt_bitwise_array array)
 {
 	free(array.bits);
 }
@@ -148,7 +148,7 @@ LIBADT_EXPORT inline void libadt_bitwise_array_free(struct libadt_bitwise_array 
  *
  * \returns The number stored at the given element.
  */
-LIBADT_EXPORT inline unsigned int libadt_bitwise_array_get(
+inline unsigned int libadt_bitwise_array_get(
 	struct libadt_bitwise_array array,
 	ssize_t index
 )
@@ -216,7 +216,7 @@ LIBADT_EXPORT inline unsigned int libadt_bitwise_array_get(
  * \param index The location in the array to set the value at.
  * \param value The value to set.
  */
-LIBADT_EXPORT inline void libadt_bitwise_array_set(
+inline void libadt_bitwise_array_set(
 	struct libadt_bitwise_array array,
 	ssize_t index,
 	unsigned int value
