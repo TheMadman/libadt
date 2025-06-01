@@ -515,7 +515,7 @@ inline struct libadt_lptr libadt_lptr_index(
  */
 inline ssize_t libadt_const_lptr_size(struct libadt_const_lptr lptr)
 {
-	if (SSIZE_MAX / lptr.length < lptr.size)
+	if (SSIZE_MAX / lptr.size < lptr.length)
 		return -1;
 	return lptr.size * lptr.length;
 }
