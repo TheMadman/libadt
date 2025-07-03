@@ -243,7 +243,6 @@ inline void libadt_bitwise_array_set(
 		start_from = 0;
 	}
 }
-#undef libadt_util_max
 
 #ifdef __cplusplus
 } // extern "C"
