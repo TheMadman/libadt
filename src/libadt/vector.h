@@ -23,12 +23,8 @@
 extern "C" {
 #endif
 
-
-
 #include <stdbool.h>
 #include <stddef.h>
-
-// TODO: implement these functions as inline
 
 /**
  * \file
@@ -72,6 +68,9 @@ struct libadt_vector {
 	size_t capacity;
 };
 
+struct libadt_vector libadt_vector_truncate(struct libadt_vector, size_t);
+bool libadt_vector_identity(struct libadt_vector, struct libadt_vector);
+
 /**
  * \public \memberof libadt_vector
  * \brief Constructs a new libadt_vector with the given
@@ -90,7 +89,25 @@ struct libadt_vector {
  * 	vector failing libadt_vector_valid() if an allocation
  * 	attempt failed.
  */
-struct libadt_vector libadt_vector_init(size_t size, size_t initial_capacity);
+inline struct libadt_vector libadt_vector_init(size_t size, size_t initial_capacity)
+{
+	struct libadt_vector result = {
+		.buffer = NULL,
+		.size = size,
+		.capacity = 0,
+		.length = 0,
+	};
+
+	if (initial_capacity) {
+		struct libadt_vector attempt = libadt_vector_truncate(result, initial_capacity);
+		if (libadt_vector_identity(attempt, result))
+			return result;
+		else
+			result = attempt;
+	}
+
+	return result;
+}
 
 /**
  * \public \memberof libadt_vector
@@ -106,15 +123,14 @@ struct libadt_vector libadt_vector_free(struct libadt_vector vector);
  * \public \memberof libadt_vector
  * \brief Tests whether a libadt_vector is a valid object.
  *
- * A function-like macro with the same name is provided, and will
- * be used by default for function call syntax.
- *
  * \param vector The vector to test.
  *
  * \returns True if the vector is valid for use, false otherwise.
  */
-bool libadt_vector_valid(struct libadt_vector vector);
-#define libadt_vector_valid(vec) (!!(vec).size)
+inline bool libadt_vector_valid(struct libadt_vector vector)
+{
+	return !!vector.size;
+}
 
 /**
  * \brief Provides a context manager interface for a vector.
@@ -170,23 +186,21 @@ for ( \
  * Vectors are considered identical if the buffer, length, size and
  * capacity are the same.
  *
- * A function-like macro with the same name is provided, and will
- * be used by default for function call syntax.
- *
  * \param first The first vector to compare.
  * \param second The second vector to compare.
  *
  * \returns True if the vectors are identical, false otherwise.
  */
-bool libadt_vector_identity(
+inline bool libadt_vector_identity(
 	struct libadt_vector first,
 	struct libadt_vector second
-);
-#define libadt_vector_identity(first, second) \
-	((first).buffer == (second).buffer \
-	&& (first).size == (second).size \
-	&& (first).length == (second).length \
-	&& (first).capacity == (second).capacity)
+)
+{
+	return first.buffer == second.buffer
+		&& first.size == second.size
+		&& first.length == second.length
+		&& first.capacity == second.capacity;
+}
 
 /**
  * \public \memberof libadt_vector
@@ -216,21 +230,19 @@ struct libadt_vector libadt_vector_append_n(
  *
  * Identical to libadt_vector_append_n(vector, data, 1).
  *
- * A function-like macro with the same name is provided, and will
- * be used by default for function call syntax.
- *
  * \param vector The vector to append the element to.
  * \param data The element to append.
  *
  * \returns A vector with the new element appended. On error,
  * 	the old vector is returned.
  */
-struct libadt_vector libadt_vector_append(
+inline struct libadt_vector libadt_vector_append(
 	struct libadt_vector vector,
 	void *data
-);
-#define libadt_vector_append(vec, data) \
-	libadt_vector_append_n((vec), (data), 1)
+)
+{
+	return libadt_vector_append_n(vector, data, 1);
+}
 
 /**
  * \public \memberof libadt_vector
@@ -239,7 +251,10 @@ struct libadt_vector libadt_vector_append(
  *
  * \param vector The vector to resize.
  */
-struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector);
+inline struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector)
+{
+	return libadt_vector_truncate(vector, vector.length);
+}
 
 /**
  * \public \memberof libadt_vector
@@ -272,35 +287,30 @@ struct libadt_vector libadt_vector_truncate(
  * No check is performed. You must compare against libadt_vector::length
  * or against libadt_vector_end().
  *
- * A function-like macro with the same name is provided, and will
- * be used by default for function call syntax.
- *
  * \param vector The vector to index into.
  * \param index The item index to get, starting from zero.
  *
  * \returns A pointer to the item at the given index.
  */
-void *libadt_vector_index(struct libadt_vector vector, size_t index);
-
-// wow this is ugly
-#define libadt_vector_index(vec, index) \
-	((void *)&((char *)(vec).buffer)[(vec).size * (index)])
+inline void *libadt_vector_index(struct libadt_vector vector, size_t index)
+{
+	return &((char *)vector.buffer)[vector.size * index];
+}
 
 /**
  * \public \memberof libadt_vector
  * \brief Returns a pointer one past the end of the last
  * 	item in _vector._
  *
- * A function-like macro with the same name is provided, and will
- * be used by default for function call syntax.
- *
  * \param vector The vector to get the end of.
  *
  * \returns A pointer one past the end of the last element.
  */
 void *libadt_vector_end(struct libadt_vector vector);
-#define libadt_vector_end(vec) \
-	libadt_vector_index((vec), (vec).length)
+inline void *libadt_vector_end(struct libadt_vector vector)
+{
+	return libadt_vector_index(vector, vector.length);
+}
 
 /**
  * \public \memberof libadt_vector
