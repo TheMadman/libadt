@@ -66,13 +66,13 @@ void test_libadt_lptr_calloc(void)
 
 	{
 		// should fail
-		lptr_t lptr = libadt_lptr_calloc(SSIZE_MAX, 1);
+		lptr_t lptr = libadt_lptr_calloc(-1, 1);
 		assert(!allocated(lptr));
 	}
 
 	{
 		//function version
-		lptr_t lptr = (libadt_lptr_calloc)(SSIZE_MAX, 1);
+		lptr_t lptr = (libadt_lptr_calloc)(-1, 1);
 		assert(!allocated(lptr));
 	}
 }
