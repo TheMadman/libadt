@@ -245,6 +245,28 @@ inline struct libadt_vector libadt_vector_append(
 }
 
 /**
+ * \brief An alternative interface for libadt_vector_append,
+ * 	mutating the vector in-place and returning an
+ * 	error code.
+ *
+ * \param vector A pointer to the vector to append to.
+ * \param data The data to append.
+ *
+ * \returns 0 on success, -1 on failure.
+ */
+inline int libadt_vector_push(
+	struct libadt_vector *vector,
+	void *data
+)
+{
+	struct libadt_vector attempt = libadt_vector_append(*vector, data);
+	if (libadt_vector_identity(attempt, *vector))
+		return -1;
+	*vector = attempt;
+	return 0;
+}
+
+/**
  * \public \memberof libadt_vector
  * \brief Reallocates the vector's buffer down to the
  * 	size of the actually stored data.

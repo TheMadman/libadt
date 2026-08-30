@@ -70,3 +70,20 @@ struct libadt_vector libadt_vector_pop(struct libadt_vector vector, void *out)
 	memmove(out, value, vector.size);
 	return vector;
 }
+
+// non-inline declarations of inline functions
+void *libadt_vector_index(struct libadt_vector vector, size_t index);
+struct libadt_vector libadt_vector_append(
+	struct libadt_vector vector,
+	void *data
+);
+int libadt_vector_push(
+	struct libadt_vector *vector,
+	void *data
+);
+bool libadt_vector_identity(
+	struct libadt_vector first,
+	struct libadt_vector second
+);
+void *libadt_vector_end(struct libadt_vector vector);
+bool libadt_vector_valid(struct libadt_vector vector);
