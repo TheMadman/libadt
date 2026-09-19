@@ -68,8 +68,52 @@ struct libadt_vector {
 	size_t capacity;
 };
 
-struct libadt_vector libadt_vector_truncate(struct libadt_vector, size_t);
-bool libadt_vector_identity(struct libadt_vector, struct libadt_vector);
+/**
+ * \public \memberof libadt_vector
+ * \brief Resizes the vector's capacity to new_capacity.
+ *
+ * If the new capacity is shorter than the current length,
+ * elements on the end of the vector are dropped and the
+ * length is set to the new capacity. If the value is larger
+ * than the current length, the new memory is uninitialized
+ * and the length is untouched.
+ *
+ * \param vector The vector to modify.
+ * \param new_capacity The new capacity to resize the
+ * 	vector to.
+ *
+ * \returns The new vector, with the correct pointer and
+ * 	capacity. If the truncate failed, the old vector is
+ * 	returned.
+ */
+struct libadt_vector libadt_vector_truncate(
+	struct libadt_vector vector,
+	size_t new_capacity
+);
+
+/**
+ * \public \memberof libadt_vector
+ * \brief Checks if the first vector and the second vector
+ * 	refer to the same vector.
+ *
+ * Vectors are considered identical if the buffer, length, size and
+ * capacity are the same.
+ *
+ * \param first The first vector to compare.
+ * \param second The second vector to compare.
+ *
+ * \returns True if the vectors are identical, false otherwise.
+ */
+inline bool libadt_vector_identity(
+	struct libadt_vector first,
+	struct libadt_vector second
+)
+{
+	return first.buffer == second.buffer
+		&& first.size == second.size
+		&& first.length == second.length
+		&& first.capacity == second.capacity;
+}
 
 /**
  * \public \memberof libadt_vector
@@ -180,30 +224,6 @@ for ( \
 
 /**
  * \public \memberof libadt_vector
- * \brief Checks if the first vector and the second vector
- * 	refer to the same vector.
- *
- * Vectors are considered identical if the buffer, length, size and
- * capacity are the same.
- *
- * \param first The first vector to compare.
- * \param second The second vector to compare.
- *
- * \returns True if the vectors are identical, false otherwise.
- */
-inline bool libadt_vector_identity(
-	struct libadt_vector first,
-	struct libadt_vector second
-)
-{
-	return first.buffer == second.buffer
-		&& first.size == second.size
-		&& first.length == second.length
-		&& first.capacity == second.capacity;
-}
-
-/**
- * \public \memberof libadt_vector
  * \brief Appends _number_ new elements to the vector _vector_,
  * 	beginning from _data._
  *
@@ -219,7 +239,7 @@ inline bool libadt_vector_identity(
  */
 struct libadt_vector libadt_vector_append_n(
 	struct libadt_vector vector,
-	void *data,
+	const void *data,
 	size_t number
 );
 
@@ -238,7 +258,7 @@ struct libadt_vector libadt_vector_append_n(
  */
 inline struct libadt_vector libadt_vector_append(
 	struct libadt_vector vector,
-	void *data
+	const void *data
 )
 {
 	return libadt_vector_append_n(vector, data, 1);
@@ -256,7 +276,7 @@ inline struct libadt_vector libadt_vector_append(
  */
 inline int libadt_vector_push(
 	struct libadt_vector *vector,
-	void *data
+	const void *data
 )
 {
 	struct libadt_vector attempt = libadt_vector_append(*vector, data);
@@ -277,29 +297,6 @@ inline struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector)
 {
 	return libadt_vector_truncate(vector, vector.length);
 }
-
-/**
- * \public \memberof libadt_vector
- * \brief Resizes the vector's capacity to new_capacity.
- *
- * If the new capacity is shorter than the current length,
- * elements on the end of the vector are dropped and the
- * length is set to the new capacity. If the value is larger
- * than the current length, the new memory is uninitialized
- * and the length is untouched.
- *
- * \param vector The vector to modify.
- * \param new_capacity The new capacity to resize the
- * 	vector to.
- *
- * \returns The new vector, with the correct pointer and
- * 	capacity. If the truncate failed, the old vector is
- * 	returned.
- */
-struct libadt_vector libadt_vector_truncate(
-	struct libadt_vector vector,
-	size_t new_capacity
-);
 
 /**
  * \public \memberof libadt_vector
@@ -328,7 +325,6 @@ inline void *libadt_vector_index(struct libadt_vector vector, size_t index)
  *
  * \returns A pointer one past the end of the last element.
  */
-void *libadt_vector_end(struct libadt_vector vector);
 inline void *libadt_vector_end(struct libadt_vector vector)
 {
 	return libadt_vector_index(vector, vector.length);
