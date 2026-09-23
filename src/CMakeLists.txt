@@ -2,7 +2,8 @@ set(SOURCES
 	vector.c
 	bitwise_array.c
 	lptr.c
-	str.c)
+	str.c
+	freelist.c)
 
 add_library(adtobj OBJECT ${SOURCES})
 add_library(adt SHARED)
