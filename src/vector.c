@@ -19,7 +19,7 @@ void *libadt_vector_end(struct libadt_vector vector);
 struct libadt_vector libadt_vector_free(struct libadt_vector vector)
 {
 	free(vector.buffer);
-	return (struct libadt_vector){ .size = vector.size };
+	return (struct libadt_vector){ 0 };
 }
 
 struct libadt_vector libadt_vector_truncate(
