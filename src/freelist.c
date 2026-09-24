@@ -43,10 +43,22 @@ int libadt_freelist_remove(
 		.next = list->free,
 	};
 
-	void *position = libadt_vector_index(list->vector, index);
+	void *position = libadt_freelist_index(*list, index);
 	*(struct _libadt_freelist_node*)position = new_node;
 	list->free = position;
 	return 0;
+}
+
+bool libadt_freelist_allocated(struct libadt_freelist list, size_t index)
+{
+	if (list.vector.length < index)
+		return false;
+	void *loc = libadt_vector_index(list.vector, index);
+	for (struct _libadt_freelist_node *c = list.free; c; c = c->next) {
+		if (c == loc)
+			return false;
+	}
+	return true;
 }
 
 // non-inline definitions of inline functions in freelist.h
@@ -58,6 +70,6 @@ struct libadt_freelist libadt_freelist_free(
 	struct libadt_freelist list
 );
 void *libadt_freelist_index(
-	struct libadt_freelist *list,
+	struct libadt_freelist list,
 	size_t index
 );

@@ -28,6 +28,7 @@ extern "C" {
  */
 
 #include "vector.h"
+#include "util.h"
 
 struct _libadt_freelist_node {
 	struct _libadt_freelist_node *next;
@@ -59,6 +60,7 @@ inline struct libadt_freelist libadt_freelist_init(
 	size_t initial_capacity
 )
 {
+	size = libadt_util_max(size, sizeof(void**));
 	return (struct libadt_freelist){
 		.vector = libadt_vector_init(
 			size,
@@ -82,12 +84,24 @@ inline struct libadt_freelist libadt_freelist_free(
 	};
 };
 
+/**
+ * \brief Returns true if the given index is a valid object,
+ * 	false otherwise.
+ */
+bool libadt_freelist_allocated(struct libadt_freelist list, size_t index);
+
+/**
+ * \brief Returns a pointer into the list, or NULL if the index
+ * 	is not valid.
+ */
 inline void *libadt_freelist_index(
-	struct libadt_freelist *list,
+	struct libadt_freelist list,
 	size_t index
 )
 {
-	return libadt_vector_index(list->vector, index);
+	if (!libadt_freelist_allocated(list, index))
+		return NULL;
+	return libadt_vector_index(list.vector, index);
 }
 
 /**

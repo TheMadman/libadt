@@ -138,8 +138,8 @@ inline struct libadt_vector libadt_vector_init(size_t size, size_t initial_capac
 	struct libadt_vector result = {
 		.buffer = NULL,
 		.size = size,
-		.capacity = 0,
 		.length = 0,
+		.capacity = 0,
 	};
 
 	if (initial_capacity) {
@@ -313,7 +313,7 @@ inline struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector)
  */
 inline void *libadt_vector_index(struct libadt_vector vector, size_t index)
 {
-	return &((char *)vector.buffer)[vector.size * index];
+	return ((char (*)[vector.size])vector.buffer)[index];
 }
 
 /**

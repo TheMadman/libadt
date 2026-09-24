@@ -28,6 +28,7 @@ extern "C" {
 #include "libadt/str.h"
 #include "libadt/bitwise_array.h"
 #include "libadt/vector.h"
+#include "libadt/freelist.h"
 
 #ifdef __cplusplus
 } // extern "C"

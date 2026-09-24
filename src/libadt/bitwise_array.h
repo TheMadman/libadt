@@ -113,7 +113,7 @@ inline struct libadt_bitwise_array libadt_bitwise_array_alloc(ssize_t length, in
 	return (struct libadt_bitwise_array) {
 		.length = length,
 		.width = width,
-		.bits = malloc((size_t)bytes),
+		.bits = (libadt_bitwise_array_bit*)malloc((size_t)bytes),
 	};
 }
 
