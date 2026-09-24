@@ -10,7 +10,7 @@ struct libadt_vector libadt_vector_init(size_t size, size_t initial_capacity);
 void *libadt_vector_index(struct libadt_vector vector, size_t index);
 struct libadt_vector libadt_vector_append(
 	struct libadt_vector vector,
-	void *data
+	const void *data
 );
 struct libadt_vector libadt_vector_vacuum(struct libadt_vector vector);
 void *libadt_vector_index(struct libadt_vector vector, size_t index);
@@ -40,7 +40,7 @@ struct libadt_vector libadt_vector_truncate(
 
 struct libadt_vector libadt_vector_append_n(
 	struct libadt_vector vector,
-	void *data,
+	const void *data,
 	size_t number
 )
 {
@@ -75,11 +75,11 @@ struct libadt_vector libadt_vector_pop(struct libadt_vector vector, void *out)
 void *libadt_vector_index(struct libadt_vector vector, size_t index);
 struct libadt_vector libadt_vector_append(
 	struct libadt_vector vector,
-	void *data
+	const void *data
 );
 int libadt_vector_push(
 	struct libadt_vector *vector,
-	void *data
+	const void *data
 );
 bool libadt_vector_identity(
 	struct libadt_vector first,
