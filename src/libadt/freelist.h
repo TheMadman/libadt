@@ -60,7 +60,7 @@ inline struct libadt_freelist libadt_freelist_init(
 	size_t initial_capacity
 )
 {
-	size = libadt_util_max(size, sizeof(void**));
+	size = libadt_util_max(size, sizeof(struct _libadt_freelist_node));
 	return (struct libadt_freelist){
 		.vector = libadt_vector_init(
 			size,
